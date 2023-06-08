@@ -15,7 +15,7 @@ private:
 
     int panel_idx;
 
-    static const int num_checks = 5;
+    static const int num_checks = 3;
     bool buttons_checks[8][num_checks];
     int buttons_sums[8];
     int check_idx;
@@ -58,7 +58,7 @@ public:
             bool button_status = buttons_checks[button_idx][check_idx];
             buttons_sums[button_idx] -= button_status ? 1 : 0;
 
-            button_status = digitalRead(pin) == HIGH;
+            button_status = digitalRead(pin) == LOW;
 
             buttons_checks[button_idx][check_idx] = button_status;
             buttons_sums[button_idx] += button_status ? 1 : 0;
