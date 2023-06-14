@@ -12,34 +12,34 @@ class Panel
 private:
     const int buttons_pins[8] = {2, 0, 4, 16, 17, 5, 18, 19};
     const int central_pin = 23;
+    const int central_led_pin = 12;
 
     int panel_idx;
 
-    static const int num_checks = 3;
-    bool buttons_checks[8][num_checks];
-    int buttons_sums[8];
-    int check_idx;
+    static const unsigned long bounce_delay = 30;
+    unsigned long last_check[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    
     bool central_status = false;
 
     #define leds_pin 21
     CRGBArray<8> leds;
 
 public:
-    Panel(int panel_idx) : panel_idx(panel_idx), check_idx(0)
+    bool buttons_status[9];
+
+    Panel(int panel_idx) : panel_idx(panel_idx)
     {
         // Init buttons
         for (int button_idx(0) ; button_idx<8 ; button_idx++)
         {
+            buttons_status[button_idx] = false;
             int pin = buttons_pins[button_idx];
             pinMode(pin, INPUT_PULLUP);
-            buttons_sums[button_idx] = 0;
-            for (int i(0) ; i<num_checks ; i++)
-                buttons_checks[button_idx][i] = false;
-            
         }
         pinMode(central_pin, INPUT_PULLUP);
 
         // Init leds
+        pinMode(central_led_pin, OUTPUT);
         FastLED.addLeds<NEOPIXEL, leds_pin>(leds, 8);
         for (int idx(0) ; idx<8 ; idx++)
         {
@@ -50,23 +50,26 @@ public:
 
     ~Panel() {};
 
-    void check_buttons(bool status[8])
+    void check_buttons()
     {
-        for (int button_idx(0) ; button_idx<8 ; button_idx++)
+        for (int button_idx(0) ; button_idx<9 ; button_idx++)
         {
-            int pin = buttons_pins[button_idx];
-            bool button_status = buttons_checks[button_idx][check_idx];
-            buttons_sums[button_idx] -= button_status ? 1 : 0;
+            int pin = (button_idx == 8) ? this->central_pin : buttons_pins[button_idx];
+            bool button_status = digitalRead(pin) == LOW;
+            unsigned long t = millis();
 
-            button_status = digitalRead(pin) == LOW;
-
-            buttons_checks[button_idx][check_idx] = button_status;
-            buttons_sums[button_idx] += button_status ? 1 : 0;
-
-            status[button_idx] = buttons_sums[button_idx] > (num_checks / 2);
+            // Is it the same value than the privious one
+            if (this->buttons_status[button_idx] == button_status)
+            {
+                this->last_check[button_idx] = t;
+            }
+            // Is the anti-bouncing delay over ?
+            else if (t - this->last_check[button_idx] >= bounce_delay)
+            {
+                this->buttons_status[button_idx] = button_status;
+                this->last_check[button_idx] = t;
+            }
         }
-
-        check_idx = (check_idx + 1) % num_checks;
     };
 
     void set_color(int led_idx, int color_idx)
@@ -81,6 +84,11 @@ public:
     void show_colors()
     {
         FastLED.show();
+    }
+
+    void central_led(bool power)
+    {
+        digitalWrite(central_led_pin, power);
     }
 
     void test_leds()

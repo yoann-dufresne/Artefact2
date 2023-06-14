@@ -23,20 +23,29 @@ void loop() {
 }
 
 
-bool light[8] = {false, false, false, false, false, false, false, false};
+bool light[9] = {false, false, false, false, false, false, false, false, false};
 void hardware_loop() {
-  bool current_status[8];
-  p->check_buttons(current_status);
+  p->check_buttons();
 
+  // 8 buttons
   for (int idx(0) ; idx<8 ; idx++)
   {
-    if (current_status[idx] != light[idx])
+    if (p->buttons_status[idx] != light[idx])
     {
-      p->set_color(idx, current_status[idx] ? 1 : 0);
-      light[idx] = current_status[idx];
+      p->set_color(idx, p->buttons_status[idx] ? 1 : 0);
+      light[idx] = p->buttons_status[idx];
     }
-    Serial.print(current_status[idx]);Serial.print(" ");
+    Serial.print(p->buttons_status[idx]);Serial.print(" ");
   }
+
+  // Central button
+  if (p->buttons_status[8] != light[8])
+  {
+    p->set_color(0, p->buttons_status[8] ? 1 : 0);
+    light[8] = p->buttons_status[8];
+  }
+  Serial.print(p->buttons_status[8]);
+
   p->show_colors();
   Serial.println();
 
