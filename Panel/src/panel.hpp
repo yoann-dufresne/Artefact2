@@ -1,8 +1,6 @@
 #include <Arduino.h>
 #include "colors.h"
 #include "FastLED.h"
-#include "config.h"
-#include "Network.hpp"
 
 
 #ifndef PANEL_H
