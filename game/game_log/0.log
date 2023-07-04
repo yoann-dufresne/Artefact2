@@ -1,0 +1,266 @@
+1674988677.7722008	new game
+1674988677.772275	new enigma
+1674988677.8729255	vector subenigmas solved	[False]
+1674988704.7578123	button pushed	Button object - panel: 3 button: 8 status: DOWN color: None
+1674988704.7645097	vector subenigmas solved	[True]
+1674988704.8412995	button pushed	Button object - panel: 3 button: 8 status: UP color: None
+1674988709.7699032	new enigma
+1674988709.8704588	vector subenigmas solved	[False, False, True, True, True]
+1674988712.535671	button pushed	Button object - panel: 1 button: 8 status: DOWN color: None
+1674988712.5819962	on error
+1674988712.6282759	button pushed	Button object - panel: 1 button: 8 status: UP color: None
+1674988714.6867712	vector subenigmas solved	[False, False, True, True, True]
+1674988716.7374299	button pushed	Button object - panel: 2 button: 8 status: DOWN color: None
+1674988716.797443	vector subenigmas solved	[True, False, True, True, True]
+1674988716.8226604	button pushed	Button object - panel: 2 button: 8 status: UP color: None
+1674988717.9794295	button pushed	Button object - panel: 6 button: 8 status: DOWN color: None
+1674988718.0038264	vector subenigmas solved	[True, True, True, True, True]
+1674988718.1070404	button pushed	Button object - panel: 6 button: 8 status: UP color: None
+1674988723.0087273	new enigma
+1674988723.110104	vector subenigmas solved	[False, False, False, False, True, True, True, True]
+1674988725.5096862	button pushed	Button object - panel: 0 button: 8 status: DOWN color: None
+1674988725.530337	vector subenigmas solved	[True, False, False, False, True, True, True, True]
+1674988725.6376812	button pushed	Button object - panel: 0 button: 8 status: UP color: None
+1674988726.3400478	button pushed	Button object - panel: 0 button: 8 status: DOWN color: None
+1674988726.396001	button pushed	Button object - panel: 0 button: 8 status: UP color: None
+1674988726.4350302	vector subenigmas solved	[False, False, False, False, True, True, True, True]
+1674988728.0990424	button pushed	Button object - panel: 0 button: 8 status: DOWN color: None
+1674988728.14354	vector subenigmas solved	[True, False, False, False, True, True, True, True]
+1674988728.1773515	button pushed	Button object - panel: 0 button: 8 status: UP color: None
+1674988814.1377654	button pushed	Button object - panel: 2 button: 8 status: DOWN color: None
+1674988814.1403577	vector subenigmas solved	[True, True, False, False, True, True, True, True]
+1674988814.193136	button pushed	Button object - panel: 2 button: 8 status: UP color: None
+1674988815.2182145	button pushed	Button object - panel: 4 button: 8 status: DOWN color: None
+1674988815.247098	vector subenigmas solved	[True, True, True, False, True, True, True, True]
+1674988815.2894032	button pushed	Button object - panel: 4 button: 8 status: UP color: None
+1674988816.035865	button pushed	Button object - panel: 6 button: 8 status: DOWN color: None
+1674988816.051781	vector subenigmas solved	[True, True, True, True, True, True, True, True]
+1674988816.114059	button pushed	Button object - panel: 6 button: 8 status: UP color: None
+1674988821.0537949	new enigma
+1674988821.1542857	vector subenigmas solved	[False]
+1674988825.7313514	button pushed	Button object - panel: 1 button: 3 status: DOWN color: mauve
+1674988825.7918286	vector subenigmas solved	[True]
+1674988825.8019915	button pushed	Button object - panel: 1 button: 3 status: UP color: noir
+1674988830.7954624	new enigma
+1674988830.896967	vector subenigmas solved	[False, False, False, False]
+1674988833.6372244	button pushed	Button object - panel: 0 button: 8 status: DOWN color: None
+1674988833.7150903	vector subenigmas solved	[True, False, False, False]
+1674988833.7442377	button pushed	Button object - panel: 0 button: 8 status: UP color: None
+1674988837.5130217	button pushed	Button object - panel: 4 button: 3 status: DOWN color: mauve
+1674988837.6041028	button pushed	Button object - panel: 4 button: 3 status: UP color: mauve
+1674988838.9949734	button pushed	Button object - panel: 4 button: 0 status: DOWN color: rouge
+1674988839.1087384	button pushed	Button object - panel: 4 button: 0 status: UP color: rouge
+1674988841.5716047	button pushed	Button object - panel: 4 button: 6 status: DOWN color: blanc
+1674988841.663635	button pushed	Button object - panel: 4 button: 6 status: UP color: blanc
+1674988843.9859867	button pushed	Button object - panel: 4 button: 4 status: DOWN color: orange
+1674988844.080038	vector subenigmas solved	[True, True, False, False]
+1674988844.0977912	button pushed	Button object - panel: 4 button: 4 status: UP color: orange
+1674988847.5332758	button pushed	Button object - panel: 5 button: 8 status: DOWN color: None
+1674988847.608043	vector subenigmas solved	[True, True, True, False]
+1674988847.6532824	button pushed	Button object - panel: 5 button: 8 status: UP color: None
+1674988851.6212132	button pushed	Button object - panel: 7 button: 0 status: DOWN color: rouge
+1674988851.727737	button pushed	Button object - panel: 7 button: 0 status: UP color: rouge
+1674988854.4169307	button pushed	Button object - panel: 7 button: 7 status: DOWN color: noir
+1674988854.5383458	button pushed	Button object - panel: 7 button: 7 status: UP color: noir
+1674988854.8850043	button pushed	Button object - panel: 7 button: 7 status: DOWN color: noir
+1674988855.020084	button pushed	Button object - panel: 7 button: 7 status: UP color: noir
+1674988855.4257169	button pushed	Button object - panel: 7 button: 7 status: DOWN color: noir
+1674988855.5096955	button pushed	Button object - panel: 7 button: 7 status: UP color: noir
+1674988856.9445343	button pushed	Button object - panel: 7 button: 5 status: DOWN color: turquoise
+1674988857.0718472	button pushed	Button object - panel: 7 button: 5 status: UP color: turquoise
+1674988858.767715	button pushed	Button object - panel: 7 button: 2 status: DOWN color: jaune
+1674988858.8822103	button pushed	Button object - panel: 7 button: 2 status: UP color: jaune
+1674988861.0958438	button pushed	Button object - panel: 7 button: 1 status: DOWN color: bleu
+1674988861.2031884	button pushed	Button object - panel: 7 button: 1 status: UP color: bleu
+1674988862.614315	button pushed	Button object - panel: 7 button: 0 status: DOWN color: rouge
+1674988862.6854632	button pushed	Button object - panel: 7 button: 0 status: UP color: rouge
+1674988862.697523	vector subenigmas solved	[True, True, True, True]
+1674988867.7034335	new enigma
+1674988867.8049285	vector subenigmas solved	[False, False]
+1674988871.4106495	button pushed	Button object - panel: 4 button: 8 status: DOWN color: None
+1674988871.4280732	vector subenigmas solved	[True, False]
+1674988871.501787	button pushed	Button object - panel: 4 button: 8 status: UP color: None
+1674988874.2631564	button pushed	Button object - panel: 4 button: 5 status: DOWN color: turquoise
+1674988874.3771043	button pushed	Button object - panel: 4 button: 5 status: UP color: turquoise
+1674988876.2791388	button pushed	Button object - panel: 4 button: 0 status: DOWN color: rouge
+1674988876.371601	button pushed	Button object - panel: 4 button: 0 status: UP color: rouge
+1674988877.925976	button pushed	Button object - panel: 4 button: 6 status: DOWN color: blanc
+1674988878.0319498	button pushed	Button object - panel: 4 button: 6 status: UP color: blanc
+1674988879.4867246	button pushed	Button object - panel: 4 button: 3 status: DOWN color: mauve
+1674988879.6082447	button pushed	Button object - panel: 4 button: 3 status: UP color: mauve
+1674988882.1137958	button pushed	Button object - panel: 4 button: 7 status: DOWN color: noir
+1674988882.1981852	button pushed	Button object - panel: 4 button: 7 status: UP color: noir
+1674988882.9084897	button pushed	Button object - panel: 4 button: 5 status: DOWN color: turquoise
+1674988882.9720652	button pushed	Button object - panel: 4 button: 5 status: UP color: turquoise
+1674988882.9911392	vector subenigmas solved	[True, True]
+1674988887.9943457	new enigma
+1674988888.0949228	vector subenigmas solved	[False, False, False, False]
+1674988891.5619695	button pushed	Button object - panel: 1 button: 8 status: DOWN color: None
+1674988891.6145058	vector subenigmas solved	[False, False, True, False]
+1674988891.6611567	button pushed	Button object - panel: 1 button: 8 status: UP color: None
+1674988892.9670599	button pushed	Button object - panel: 4 button: 8 status: DOWN color: None
+1674988893.0238588	vector subenigmas solved	[True, False, True, False]
+1674988893.0524702	button pushed	Button object - panel: 4 button: 8 status: UP color: None
+1674988896.0262148	button pushed	Button object - panel: 1 button: 0 status: DOWN color: rouge
+1674988896.1672883	button pushed	Button object - panel: 1 button: 0 status: UP color: rouge
+1674988898.4765332	button pushed	Button object - panel: 1 button: 7 status: DOWN color: noir
+1674988898.5527608	button pushed	Button object - panel: 1 button: 7 status: UP color: noir
+1674988899.6607826	button pushed	Button object - panel: 1 button: 0 status: DOWN color: rouge
+1674988899.7601566	button pushed	Button object - panel: 1 button: 0 status: UP color: rouge
+1674988901.1512957	button pushed	Button object - panel: 1 button: 7 status: DOWN color: noir
+1674988901.2495549	button pushed	Button object - panel: 1 button: 7 status: UP color: noir
+1674988901.3563626	button pushed	Button object - panel: 1 button: 7 status: DOWN color: noir
+1674988901.4413896	button pushed	Button object - panel: 1 button: 7 status: UP color: noir
+1674988902.9685247	button pushed	Button object - panel: 1 button: 0 status: DOWN color: rouge
+1674988902.9791353	vector subenigmas solved	[True, False, True, True]
+1674988903.068339	button pushed	Button object - panel: 1 button: 0 status: UP color: rouge
+1674988906.0483909	button pushed	Button object - panel: 4 button: 2 status: DOWN color: jaune
+1674988906.1334548	button pushed	Button object - panel: 4 button: 2 status: UP color: jaune
+1674988907.9516854	button pushed	Button object - panel: 4 button: 6 status: DOWN color: blanc
+1674988908.05099	button pushed	Button object - panel: 4 button: 6 status: UP color: blanc
+1674988908.201255	button pushed	Button object - panel: 4 button: 6 status: DOWN color: blanc
+1674988908.2838016	button pushed	Button object - panel: 4 button: 6 status: UP color: blanc
+1674988909.9457276	button pushed	Button object - panel: 4 button: 4 status: DOWN color: orange
+1674988910.0165892	button pushed	Button object - panel: 4 button: 4 status: UP color: orange
+1674988911.9820101	button pushed	Button object - panel: 4 button: 0 status: DOWN color: rouge
+1674988912.0679145	button pushed	Button object - panel: 4 button: 0 status: UP color: rouge
+1674988913.842942	button pushed	Button object - panel: 4 button: 5 status: DOWN color: turquoise
+1674988913.9279726	button pushed	Button object - panel: 4 button: 5 status: UP color: turquoise
+1674988913.9391546	vector subenigmas solved	[True, True, True, True]
+1674988918.9448876	new enigma
+1674988919.0461466	vector subenigmas solved	[False]
+1674988925.0379627	button pushed	Button object - panel: 3 button: 0 status: DOWN color: bleu
+1674988925.0751696	vector subenigmas solved	[True]
+1674988925.2713666	button pushed	Button object - panel: 3 button: 0 status: UP color: noir
+1674988930.078337	new enigma
+1674988930.1789672	vector subenigmas solved	[False, True, True]
+1674988936.5706964	button pushed	Button object - panel: 3 button: 6 status: DOWN color: bleu
+1674988936.7058995	button pushed	Button object - panel: 3 button: 6 status: UP color: bleu
+1674988937.5858278	button pushed	Button object - panel: 4 button: 6 status: DOWN color: bleu
+1674988937.6150463	vector subenigmas solved	[True, True, True]
+1674988937.7209182	button pushed	Button object - panel: 4 button: 6 status: UP color: noir
+1674988942.6182063	new enigma
+1674988942.7187123	vector subenigmas solved	[False, False, True, True, True, True, True, True, True, True]
+1674988947.4030602	button pushed	Button object - panel: 0 button: 3 status: DOWN color: bleu
+1674988947.501506	button pushed	Button object - panel: 0 button: 3 status: UP color: bleu
+1674988948.545836	button pushed	Button object - panel: 2 button: 3 status: DOWN color: bleu
+1674988948.6442766	button pushed	Button object - panel: 2 button: 3 status: UP color: bleu
+1674988949.418628	button pushed	Button object - panel: 4 button: 3 status: DOWN color: bleu
+1674988949.4883294	button pushed	Button object - panel: 4 button: 3 status: UP color: bleu
+1674988950.4894795	button pushed	Button object - panel: 6 button: 3 status: DOWN color: bleu
+1674988950.557598	vector subenigmas solved	[True, False, True, True, True, True, True, True, True, True]
+1674988950.5894806	button pushed	Button object - panel: 6 button: 3 status: UP color: bleu
+1674988953.2515361	button pushed	Button object - panel: 1 button: 7 status: DOWN color: bleu
+1674988953.3285007	button pushed	Button object - panel: 1 button: 7 status: UP color: bleu
+1674988954.0459177	button pushed	Button object - panel: 3 button: 7 status: DOWN color: bleu
+1674988954.1380477	button pushed	Button object - panel: 3 button: 7 status: UP color: bleu
+1674988955.224428	button pushed	Button object - panel: 5 button: 7 status: DOWN color: bleu
+1674988955.3109598	button pushed	Button object - panel: 5 button: 7 status: UP color: bleu
+1674988956.1756163	button pushed	Button object - panel: 7 button: 7 status: DOWN color: bleu
+1674988956.1897502	vector subenigmas solved	[True, True, True, True, True, True, True, True, True, True]
+1674988956.252754	button pushed	Button object - panel: 7 button: 7 status: UP color: noir
+1674988961.1951098	new enigma
+1674988961.2968135	vector subenigmas solved	[False, True, True, True, True, True, True, True, True, False, False, False, False]
+1674988965.2913272	button pushed	Button object - panel: 0 button: 0 status: DOWN color: bleu
+1674988965.383039	button pushed	Button object - panel: 0 button: 0 status: UP color: bleu
+1674988966.0929582	button pushed	Button object - panel: 1 button: 0 status: DOWN color: bleu
+1674988966.1491556	button pushed	Button object - panel: 1 button: 0 status: UP color: bleu
+1674988967.0012877	button pushed	Button object - panel: 2 button: 0 status: DOWN color: bleu
+1674988967.0999753	button pushed	Button object - panel: 2 button: 0 status: UP color: bleu
+1674988967.9455183	button pushed	Button object - panel: 3 button: 0 status: DOWN color: bleu
+1674988968.0442593	button pushed	Button object - panel: 3 button: 0 status: UP color: bleu
+1674988968.789711	button pushed	Button object - panel: 4 button: 0 status: DOWN color: bleu
+1674988968.8612044	button pushed	Button object - panel: 4 button: 0 status: UP color: bleu
+1674988969.847672	button pushed	Button object - panel: 5 button: 0 status: DOWN color: bleu
+1674988969.9466758	button pushed	Button object - panel: 5 button: 0 status: UP color: bleu
+1674988971.5080817	button pushed	Button object - panel: 6 button: 0 status: DOWN color: bleu
+1674988971.5681837	vector subenigmas solved	[True, True, True, True, True, True, True, True, True, False, False, False, False]
+1674988971.5937812	button pushed	Button object - panel: 6 button: 0 status: UP color: bleu
+1674988973.3327744	button pushed	Button object - panel: 0 button: 8 status: DOWN color: None
+1674988973.3813393	vector subenigmas solved	[True, True, True, True, True, True, True, True, True, True, False, False, False]
+1674988973.3968246	button pushed	Button object - panel: 0 button: 8 status: UP color: None
+1674988974.0349193	button pushed	Button object - panel: 1 button: 8 status: DOWN color: None
+1674988974.0856485	vector subenigmas solved	[True, True, True, True, True, True, True, True, True, True, True, False, False]
+1674988974.1130648	button pushed	Button object - panel: 1 button: 8 status: UP color: None
+1674988975.1353679	button pushed	Button object - panel: 4 button: 8 status: DOWN color: None
+1674988975.1922975	vector subenigmas solved	[True, True, True, True, True, True, True, True, True, True, True, True, False]
+1674988975.2130322	button pushed	Button object - panel: 4 button: 8 status: UP color: None
+1674988976.3139935	button pushed	Button object - panel: 6 button: 8 status: DOWN color: None
+1674988976.3919187	button pushed	Button object - panel: 6 button: 8 status: UP color: None
+1674988976.3991685	vector subenigmas solved	[True, True, True, True, True, True, True, True, True, True, True, True, True]
+1674988981.4038055	new enigma
+1674988981.5044239	vector subenigmas solved	[False, False, False, False, False]
+1674988985.9884624	button pushed	Button object - panel: 1 button: 2 status: DOWN color: bleu
+1674988986.095989	button pushed	Button object - panel: 1 button: 2 status: UP color: bleu
+1674988986.664012	button pushed	Button object - panel: 2 button: 2 status: DOWN color: bleu
+1674988986.7770007	button pushed	Button object - panel: 2 button: 2 status: UP color: bleu
+1674988987.4860034	button pushed	Button object - panel: 3 button: 2 status: DOWN color: bleu
+1674988987.5717828	button pushed	Button object - panel: 3 button: 2 status: UP color: bleu
+1674988988.5015228	button pushed	Button object - panel: 4 button: 2 status: DOWN color: bleu
+1674988988.5937006	button pushed	Button object - panel: 4 button: 2 status: UP color: bleu
+1674988989.622797	button pushed	Button object - panel: 5 button: 2 status: DOWN color: bleu
+1674988989.74373	button pushed	Button object - panel: 5 button: 2 status: UP color: bleu
+1674988991.90095	button pushed	Button object - panel: 7 button: 2 status: DOWN color: bleu
+1674988991.9671926	vector subenigmas solved	[False, False, True, False, False]
+1674988991.9925342	button pushed	Button object - panel: 7 button: 2 status: UP color: bleu
+1674988995.1516502	button pushed	Button object - panel: 1 button: 6 status: DOWN color: bleu
+1674988995.237262	button pushed	Button object - panel: 1 button: 6 status: UP color: bleu
+1674988995.7132933	button pushed	Button object - panel: 2 button: 6 status: DOWN color: bleu
+1674988995.8053184	button pushed	Button object - panel: 2 button: 6 status: UP color: bleu
+1674988997.125782	button pushed	Button object - panel: 3 button: 6 status: DOWN color: bleu
+1674988997.210328	button pushed	Button object - panel: 3 button: 6 status: UP color: bleu
+1674988998.0550487	button pushed	Button object - panel: 4 button: 6 status: DOWN color: bleu
+1674988998.139637	button pushed	Button object - panel: 4 button: 6 status: UP color: bleu
+1674988998.9423301	button pushed	Button object - panel: 5 button: 6 status: DOWN color: bleu
+1674988999.0201838	button pushed	Button object - panel: 5 button: 6 status: UP color: bleu
+1674989000.1692483	button pushed	Button object - panel: 7 button: 6 status: DOWN color: bleu
+1674989000.2187607	vector subenigmas solved	[False, False, True, False, True]
+1674989000.2553656	button pushed	Button object - panel: 7 button: 6 status: UP color: bleu
+1674989003.7041113	button pushed	Button object - panel: 6 button: 0 status: DOWN color: rouge
+1674989003.8320434	button pushed	Button object - panel: 6 button: 0 status: UP color: rouge
+1674989007.2818048	button pushed	Button object - panel: 6 button: 7 status: DOWN color: noir
+1674989007.3668084	button pushed	Button object - panel: 6 button: 7 status: UP color: noir
+1674989008.722815	button pushed	Button object - panel: 6 button: 0 status: DOWN color: rouge
+1674989008.836144	button pushed	Button object - panel: 6 button: 0 status: UP color: rouge
+1674989010.2703524	button pushed	Button object - panel: 6 button: 7 status: DOWN color: noir
+1674989010.3475795	button pushed	Button object - panel: 6 button: 7 status: UP color: noir
+1674989011.5691752	button pushed	Button object - panel: 6 button: 1 status: DOWN color: bleu
+1674989011.689775	button pushed	Button object - panel: 6 button: 1 status: UP color: bleu
+1674989013.3933136	button pushed	Button object - panel: 6 button: 0 status: DOWN color: rouge
+1674989013.484235	button pushed	Button object - panel: 6 button: 0 status: UP color: rouge
+1674989015.2107453	button pushed	Button object - panel: 6 button: 1 status: DOWN color: bleu
+1674989015.2957764	button pushed	Button object - panel: 6 button: 1 status: UP color: bleu
+1674989016.700667	button pushed	Button object - panel: 6 button: 0 status: DOWN color: rouge
+1674989016.7925606	button pushed	Button object - panel: 6 button: 0 status: UP color: rouge
+1674989018.901453	button pushed	Button object - panel: 6 button: 7 status: DOWN color: noir
+1674989019.0067196	button pushed	Button object - panel: 6 button: 7 status: UP color: noir
+1674989020.2631333	button pushed	Button object - panel: 6 button: 0 status: DOWN color: rouge
+1674989020.383304	button pushed	Button object - panel: 6 button: 0 status: UP color: rouge
+1674989021.702643	button pushed	Button object - panel: 6 button: 7 status: DOWN color: noir
+1674989021.801013	button pushed	Button object - panel: 6 button: 7 status: UP color: noir
+1674989023.0510416	button pushed	Button object - panel: 6 button: 0 status: DOWN color: rouge
+1674989023.0545518	vector subenigmas solved	[False, False, True, True, True]
+1674989023.1357174	button pushed	Button object - panel: 6 button: 0 status: UP color: rouge
+1674989025.2199643	button pushed	Button object - panel: 0 button: 0 status: DOWN color: rouge
+1674989025.3260045	button pushed	Button object - panel: 0 button: 0 status: UP color: rouge
+1674989026.6538603	button pushed	Button object - panel: 0 button: 1 status: DOWN color: bleu
+1674989026.7885256	button pushed	Button object - panel: 0 button: 1 status: UP color: bleu
+1674989027.417518	button pushed	Button object - panel: 0 button: 1 status: DOWN color: bleu
+1674989027.5298352	button pushed	Button object - panel: 0 button: 1 status: UP color: bleu
+1674989028.427935	button pushed	Button object - panel: 0 button: 2 status: DOWN color: jaune
+1674989028.5200148	button pushed	Button object - panel: 0 button: 2 status: UP color: jaune
+1674989030.513869	button pushed	Button object - panel: 0 button: 5 status: DOWN color: turquoise
+1674989030.6346135	button pushed	Button object - panel: 0 button: 5 status: UP color: turquoise
+1674989031.3702173	button pushed	Button object - panel: 0 button: 4 status: DOWN color: orange
+1674989031.4260054	button pushed	Button object - panel: 0 button: 4 status: UP color: orange
+1674989032.7708592	button pushed	Button object - panel: 0 button: 6 status: DOWN color: blanc
+1674989032.84149	button pushed	Button object - panel: 0 button: 6 status: UP color: blanc
+1674989034.1433938	button pushed	Button object - panel: 0 button: 7 status: DOWN color: noir
+1674989034.2492282	button pushed	Button object - panel: 0 button: 7 status: UP color: noir
+1674989036.7624297	button pushed	Button object - panel: 0 button: 0 status: UP color: rouge
+1674989037.179556	button pushed	Button object - panel: 0 button: 0 status: DOWN color: rouge
+1674989037.235984	vector subenigmas solved	[False, True, True, True, True]
+1674989037.26442	button pushed	Button object - panel: 0 button: 0 status: UP color: rouge
+1674989059.6969008	button pushed	Button object - panel: 0 button: 8 status: DOWN color: None
+1674989059.7622323	vector subenigmas solved	[True, True, True, True, True]
+1674989059.788036	button pushed	Button object - panel: 0 button: 8 status: UP color: None
