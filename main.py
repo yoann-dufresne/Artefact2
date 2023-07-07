@@ -11,6 +11,9 @@ if __name__ == "__main__":
     device = RealDevice()
 
     enigmas = Game.load_from_file(sys.argv[1])
+    # for enigma in enigmas:
+    #     print(enigma.sub_enigmas)
+    # exit(0)
     nb_logs_in_dir = len(os.listdir("./game_log"))
     game_log_file = "./game_log/{}.log".format(nb_logs_in_dir)
     with open(game_log_file, "w") as f:

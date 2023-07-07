@@ -116,6 +116,16 @@ class Device(AbstractDevice):
         message = (str(ARDUINO_LED_STRIPS_ID), "2")
         self.network.messages_to_slaves.append(message)
 
+
+    def send_colors(self):
+        colors = self.get_colors()
+
+        msgs = []
+        for i in range(0, 9):
+            msgs.append((i, colors))
+
+        return msgs
+
     def build_led_strip_strings(self):
         """Build the messages to set the led strips colors."""
         commande = ord("L")

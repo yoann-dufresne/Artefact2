@@ -1,6 +1,9 @@
-# Difficulty hard
+
+# Tests
+sequence 5 mobbrnnntjlrjomt
+
 # Intro SWAG Button
-swag 0 xxxxxxxx
+swag 5 xxxxxxxx
 
 # Intro SWAG Button
 swag 7 xxxxxxxx

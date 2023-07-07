@@ -159,6 +159,7 @@ class ButtonEnigma(SubEnigma):
         return [None] * 32
 
     def button_trigger(self, button):
+        print(button)
         if button.status == Button.BUTTON_DOWN:
             return False
         else:
@@ -342,11 +343,12 @@ class SequenceEnigma(SubEnigma):
 
     def button_trigger(self, button):
         if button.status == Button.BUTTON_DOWN:
+            print(self.stack)
             if not self.stack:
                 return False
 
             color = self.stack.pop(0)
-            if button.state == color:
+            if self.buttons[button.button].state == color:
                 for idx, val in enumerate(self.solved):
                     if not val:
                         self.solved[idx] = True

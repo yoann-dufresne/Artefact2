@@ -8,6 +8,7 @@
 
 
 const int strips_pins[8] = {15, 2, 18, 19, 32, 25, 14, 12};
+//const int strips_pins[8] = {12, 14, 25, 32, 19, 18, 2, 15};
 
 class Octopus
 {
@@ -27,11 +28,11 @@ public:
     Octopus()
     {
         // Init leds
+        this->current_animation = false;
         this->leds = new CRGB*[8];
         for (int strip=0 ; strip<8 ; strip++)
         {
             this->leds[strip] = new CRGB[64];
-            this->current_animation = false;
         }
 
         // Init colors
@@ -45,6 +46,7 @@ public:
         }
 
         // Init led pins
+        // 15, 2, 18, 19, 32, 25, 14, 12
         FastLED.addLeds<NEOPIXEL, 15>(leds[0], 64);
         FastLED.addLeds<NEOPIXEL, 2>(leds[1], 64);
         FastLED.addLeds<NEOPIXEL, 18>(leds[2], 64);

@@ -15,6 +15,9 @@ Network * net;
 void setup() {
   Serial.begin(115200);
   delay(3000);
+  Serial.println("COUCOU");
+  delay(3000);
+
   octo = new Octopus();
 
   // Debug

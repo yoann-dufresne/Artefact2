@@ -91,6 +91,19 @@ class ArtefactServer(ESPServer):
                 self.inbox.append(Button(panel_id, (8 + btn_idx + panel_id - 3) % 8, Button.BUTTON_DOWN if pushed else Button.BUTTON_UP))
 
 
+    def get_colors(self):
+        return bytes([ord('C'),
+            0, 0, 0,
+            40, 1, 1,
+            1, 35, 2,
+            2, 2, 50,
+            30, 28, 0,
+            30, 0, 40,
+            0, 35, 25,
+            40, 15, 0,
+            20, 20, 20
+        ])
+
 
     def esp_connected(self, client):
         if client.mac in self.hardware_macs:
@@ -100,7 +113,7 @@ class ArtefactServer(ESPServer):
                 # Register new panel
                 self.panels[idx] = client
                 # send messages
-                mails = self.sending_boxes[idx]
+                mails = [self.get_colors()] + self.sending_boxes[idx]
                 self.sending_boxes[idx] = []
                 for msg in mails:
                     self.send_game_msg(idx, msg)
