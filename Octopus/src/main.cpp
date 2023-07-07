@@ -48,10 +48,18 @@ void network_loop() {
       delay(5000);
     };
   }
+  
+  bool light = false;
+
+  // Play animation
+  if (octo->current_animation)
+  {
+    octo->fade_out();
+    light = true;
+  }
 
   // Get messages from server
   uint8_t * rcv;
-  bool light = false;
   while ((rcv = net->read_message(10)) != nullptr)
   {
     printf("Message received\n");
@@ -71,7 +79,7 @@ void network_loop() {
       if (animation == 1) // fade out
       {
         printf("Fade out\n");
-        octo->fade_out();
+        octo->init_animation();
         break;
       }
 

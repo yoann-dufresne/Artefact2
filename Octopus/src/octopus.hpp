@@ -16,8 +16,12 @@ private:
 
     int num_colors;
     int ** colors;
+
+    uint8_t base_animation[8][64][3];
+    unsigned long anim_begin_time;
     
 public:
+    bool current_animation;
     bool buttons_status[9];
 
     Octopus()
@@ -27,10 +31,7 @@ public:
         for (int strip=0 ; strip<8 ; strip++)
         {
             this->leds[strip] = new CRGB[64];
-            // for (int led=0 ; led<64 ; led++)
-            // {
-
-            // }
+            this->current_animation = false;
         }
 
         // Init colors
@@ -105,28 +106,39 @@ public:
         );
     }
 
+    void init_animation()
+    {
+        for (int strip=0 ; strip<8 ; strip++)
+        {
+            for (int led=0 ; led<64 ; led++)
+            {
+                this->base_animation[strip][led][0] = this->leds[strip][led].r;
+                this->base_animation[strip][led][1] = this->leds[strip][led].g;
+                this->base_animation[strip][led][2] = this->leds[strip][led].b;
+            }
+        }
+        this->anim_begin_time = millis();
+        this->current_animation = true;
+    }
+
     void fade_out()
     {
-        int n = 15;
-        for (int i(0) ; i<n ; i++)
+        unsigned long t = millis();
+        double fraction = max(0.0, 1.0 - static_cast<double>(t - this->anim_begin_time) / 3000.0);
+
+        if (fraction == 0.0)
+            this->current_animation = false;
+
+        for (int strip=0 ; strip<8 ; strip++)
         {
-            for (int strip=0 ; strip<8 ; strip++)
+            for (int led=0 ; led<64 ; led++)
             {
-                for (int led=0 ; led<64 ; led++)
-                {
-                    int r = this->leds[strip][led].r;
-                    int dr = r / (n - 1 - i);
-                    int g = this->leds[strip][led].g;
-                    int dg = g / (n - 1 - i);
-                    int b = this->leds[strip][led].b;
-                    int db = b - b / (n - 1 - i);
-
-                    this->leds[strip][led].setRGB(r-dr, g-dg, b-db);
-                }
+                this->leds[strip][led].setRGB(
+                    static_cast<int>(static_cast<double>(this->base_animation[strip][led][0]) * fraction),
+                    static_cast<int>(static_cast<double>(this->base_animation[strip][led][1]) * fraction),
+                    static_cast<int>(static_cast<double>(this->base_animation[strip][led][2]) * fraction)
+                );
             }
-
-            FastLED.show();
-            delay(1500 / n);
         }
     }
 

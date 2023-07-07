@@ -1,5 +1,7 @@
 import time
 from game.state import State
+from game.hardware.button import Button
+from playsound import playsound
 
 
 class AbstractDevice:
@@ -52,7 +54,10 @@ class AbstractDevice:
                 continue
             else:
                 btn = self.server.inbox.pop(0)
-                self.enigma.button_triggered(btn)
+
+                button_exists_in_enigma = self.enigma.button_triggered(btn)
+                if button_exists_in_enigma and btn.status == Button.BUTTON_DOWN:
+                    playsound("data/validation.mp3", False)
 
             if vs != self.enigma.vector_solved():
                 vs = self.enigma.vector_solved()

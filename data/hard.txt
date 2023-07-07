@@ -1,6 +1,6 @@
 # Difficulty hard
 # Intro SWAG Button
-swag 3 xxxxxxxx
+swag 0 xxxxxxxx
 
 # Intro SWAG Button
 swag 7 xxxxxxxx
