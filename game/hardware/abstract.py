@@ -48,6 +48,9 @@ class AbstractDevice:
         while not self.enigma.is_solved():
             time.sleep(.01)
 
+            if self.server.reboot:
+                return
+
             # No new message
             if len(self.server.inbox) == 0:
                 continue
