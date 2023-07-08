@@ -84,8 +84,8 @@ def game_loop(device, enigmas, log_file):
         device.set_enigma(dup)
         while not device.solve_enigma():
             # On reboot
-            if device.reboot:
-                device.reboot = False
+            if device.server.reboot:
+                device.server.reboot = False
                 log_file.write("{}\t{}\n".format(time.time(), "reboot"))
                 print("gamelog : new enigma")
                 return

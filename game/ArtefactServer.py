@@ -10,6 +10,7 @@ class ArtefactServer(ESPServer):
         super().__init__()
         self.panels = [None]*9
         self.not_assigned = []
+        self.reboot = False
 
         self.inbox = []
 
@@ -22,7 +23,8 @@ class ArtefactServer(ESPServer):
             bytes([8, 182, 31, 40, 214, 160, 0, 0]): 5,
             bytes([8, 182, 31, 41, 214, 244, 0, 0]): 6,
             bytes([160, 183, 101, 77, 138, 28, 0, 0]): 7,
-            bytes([192, 73, 239, 205, 188, 24, 0, 0]): 8
+            bytes([192, 73, 239, 205, 188, 24, 0, 0]): 8,
+            bytes([64, 34, 216, 234, 180, 192, 0, 0]): 9
         }
 
         self.sending_boxes = [[] for _ in range(9)]
@@ -89,6 +91,8 @@ class ArtefactServer(ESPServer):
                 self.inbox.append(Button(panel_id, (btn_idx + panel_id) % 8, Button.BUTTON_DOWN if pushed else Button.BUTTON_UP))
             else:
                 self.inbox.append(Button(panel_id, (8 + btn_idx + panel_id - 3) % 8, Button.BUTTON_DOWN if pushed else Button.BUTTON_UP))
+        elif msg[0] == ord('R'):
+            self.reboot = True
 
 
     def get_colors(self):

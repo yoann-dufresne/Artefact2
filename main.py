@@ -18,5 +18,6 @@ if __name__ == "__main__":
     game_log_file = "./game_log/{}.log".format(nb_logs_in_dir)
     with open(game_log_file, "w") as f:
         # device.log_file = f
-        game_loop(device, enigmas, f)
+        while True:
+            game_loop(device, enigmas, f)
 
