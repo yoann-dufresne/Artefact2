@@ -98,6 +98,6 @@ def game_loop(device, enigmas, log_file):
             dup = deepcopy(enigma)
             device.set_enigma(dup)
             time.sleep(.01)
-    device.send_win_animation()
+    #device.send_win_animation()
     time.sleep(30)
 
