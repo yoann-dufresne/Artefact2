@@ -15,6 +15,13 @@ void handle_client(int client_socket) {
     while ((len = recv(client_socket, buffer, sizeof(buffer) - 1, 0)) > 0) {
         buffer[len] = '\0';  // Assurez-vous que le message est nul-terminé
         ESP_LOGI(TAG_SOCKET, "Message reçu: %s", buffer);
+
+        // Si le message est "ping", répondre "pong"
+        if (strcmp(buffer, "ping") == 0) {
+            const char *response = "pong";
+            send(client_socket, response, strlen(response), 0);
+            ESP_LOGI(TAG_SOCKET, "Réponse envoyée: %s", response);
+        }
     }
 
     if (len == 0) {
@@ -24,6 +31,8 @@ void handle_client(int client_socket) {
     }
 
     close(client_socket);
+    // Enlève la tache de l'ordonnanceur
+    vTaskDelete(NULL);
 }
 
 // Fonction principale du serveur
