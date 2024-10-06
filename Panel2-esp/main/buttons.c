@@ -91,5 +91,5 @@ void btns_init()
     //install gpio isr service
     gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
     //hook isr handler for specific gpio pin
-    gpio_isr_handler_add(BTN_GPIO, gpio_isr_handler, (void*) BTN_GPIO);
+    gpio_isr_handler_add(BTN1_GPIO, gpio_isr_handler, (void*) BTN1_GPIO);
 }

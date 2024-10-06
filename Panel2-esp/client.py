@@ -3,7 +3,7 @@ from time import sleep, time
 
 
 if __name__ == "__main__":
-    host = "192.168.1.63"
+    host = "192.168.1.88"
     port = 4040
 
     colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
