@@ -1,7 +1,8 @@
 import time
 from game.state import State
 from game.hardware.button import Button
-from playsound import playsound
+# from playsound import 
+from pygame import mixer
 
 
 class AbstractDevice:
@@ -14,6 +15,12 @@ class AbstractDevice:
         self.SWAG_BUTTON_ID = 8
         self.BUTTON_DOWN_CODE = "DOWN"
         self.enigma = None
+        
+        # Initialisation du sond
+        mixer.init()
+        mixer.music.load("data/atmosphere.mp3")
+        self.button_sound = mixer.Sound("data/validation.mp3")
+        mixer.music.play(loops=-1)
 
     def send_state(self):
         """Send the state to the hardware."""
@@ -59,7 +66,7 @@ class AbstractDevice:
 
                 button_exists_in_enigma = self.enigma.button_triggered(btn)
                 if button_exists_in_enigma and btn.status == Button.BUTTON_DOWN:
-                    playsound("data/validation.mp3", False)
+                    self.button_sound.play()
 
             if vs != self.enigma.vector_solved():
                 vs = self.enigma.vector_solved()
