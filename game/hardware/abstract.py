@@ -17,6 +17,7 @@ class AbstractDevice:
         self.enigma = None
         
         # Initialisation du sond
+        mixer.pre_init(buffer=4096)
         mixer.init()
         mixer.music.load("data/atmosphere.mp3")
         self.button_sound = mixer.Sound("data/validation.mp3")
