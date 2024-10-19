@@ -13,6 +13,12 @@
 #define PORT 8080
 static const char *TAG = "wifi_gateway";
 
+static TaskHandle_t * registered_tasks[] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+                                              NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+static TaskHandle_t * server;
+static TaskHandle_t * octopus;
+static TaskHandle_t * panels;
+
 void handle_device_communication(void *param);
 
 static void start_wifi_ap() {
@@ -27,7 +33,7 @@ static void start_wifi_ap() {
         .ap = {
             .ssid = WIFI_SSID,
             .ssid_len = strlen(WIFI_SSID),
-            .max_connection = 10,
+            .max_connection = 3,
             .password = "tcafetra",
             .authmode = WIFI_AUTH_WPA_WPA2_PSK,
         },
@@ -39,6 +45,8 @@ static void start_wifi_ap() {
 
     ESP_LOGI(TAG, "WiFi AP started. SSID: %s", WIFI_SSID);
 }
+
+static int next_port = PORT + 1;
 
 void handle_register(int client_socket, struct sockaddr_in client_addr) {
     char buffer[64];
@@ -53,7 +61,7 @@ void handle_register(int client_socket, struct sockaddr_in client_addr) {
             ESP_LOGI(TAG, "Device name: %s, Type: %s", name, type);
 
             // Assigner un port pour le client
-            int client_port = PORT + 1;  // Ex: à ajuster selon les connexions
+            int client_port = next_port++;  // Ex: à ajuster selon les connexions
             char response[32];
             snprintf(response, sizeof(response), "port %d", client_port);
 
@@ -61,10 +69,33 @@ void handle_register(int client_socket, struct sockaddr_in client_addr) {
             ESP_LOGI(TAG, "Assigned port %d to device %s", client_port, name);
 
             // Fermer la socket après l'envoi du port
+            shutdown(client_socket, 0);
             close(client_socket);
 
+            // Enregistrer la tâche pour gérer les communications avec ce device
+            TaskHandle_t * task = NULL;
+            if (strcmp(type, "server") == 0) {
+                task = server;
+            } else if (strcmp(type, "octopus") == 0) {
+                task = octopus;
+            } else if (strcmp(type, "panel") == 0) {
+                int panel_id = atoi(name + 5);
+                task = &(panels[panel_id]);
+            } else {
+                ESP_LOGE(TAG, "Unknown device type: %s", type);
+                return;
+            }
+
+            // Delete previous task if needed
+            if (task != NULL)
+            {
+                vTaskDelete(*task);
+                task = NULL;
+                ESP_LOGI(TAG, "Previous task deleted");
+            }
+
             // Lancer une tâche pour gérer les communications avec ce device
-            xTaskCreate(handle_device_communication, "device_task", 4096, (void *)client_port, 5, NULL);
+            xTaskCreate(handle_device_communication, "device_task", 4096, (void *)client_port, 5, task);
         } else {
             ESP_LOGE(TAG, "Invalid registration message");
         }
@@ -87,6 +118,11 @@ void start_server() {
         struct sockaddr_in client_addr;
         socklen_t addr_len = sizeof(client_addr);
         int client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &addr_len);
+
+        if (client_socket == -1) {
+            ESP_LOGE(TAG, "Error accepting client: %s", strerror(errno));
+            continue;
+        }
 
         ESP_LOGI(TAG, "New client connected");
 
@@ -111,25 +147,51 @@ void handle_device_communication(void *param) {
     struct sockaddr_in client_addr;
     socklen_t addr_len = sizeof(client_addr);
     int client_socket = accept(comm_socket, (struct sockaddr *)&client_addr, &addr_len);
+    shutdown(comm_socket, 0);
+    close(comm_socket);
+
+    if (client_socket == -1) {
+        ESP_LOGE(TAG, "Error accepting client: %s", strerror(errno));
+        vTaskDelete(NULL);
+    }
 
     // Ici, on gère la réception et l'envoi des messages du device
     while (1) {
+        // Réception des messages du device
         char buffer[64];
-        int len = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+        int len = recv(client_socket, buffer, sizeof(buffer) - 1, MSG_DONTWAIT);
         if (len > 0) {
             buffer[len] = '\0';
             ESP_LOGI(TAG, "Received from device: %s", buffer);
 
             // Logique pour envoyer les messages aux serveurs et spies
+        } else if (len == -1 && errno != EAGAIN) 
+        {
+            ESP_LOGE(TAG, "Error receiving from device: %s. Closing connection", strerror(errno));
+            shutdown(client_socket, 0);
+            close(client_socket);
+            vTaskDelete(NULL);
         }
+
+        // Envoi des messages au device
+        
+        taskYIELD();
     }
 }
 
 void app_main(void) {
+    // Init the pointers
+    server = registered_tasks[0];
+    octopus = registered_tasks[1];
+    panels = registered_tasks[2];
+
+    // Init the  esp functionalities
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
+    // Start the wifi ap
     start_wifi_ap();
+    // Start the server
     start_server();
 }
