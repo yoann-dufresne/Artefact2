@@ -13,11 +13,31 @@
 #define PORT 8080
 static const char *TAG = "wifi_gateway";
 
-static TaskHandle_t * registered_tasks[] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+static TaskHandle_t * registered_tasks[16] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                                               NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 static TaskHandle_t * server;
 static TaskHandle_t * octopus;
 static TaskHandle_t * panels;
+
+# define LB_SIZE 1024
+static char letter_boxes[16][LB_SIZE];
+static int lb_start[16];
+static int lb_free[16];
+
+void init_memory()
+{
+    // Init the pointers
+    server = registered_tasks[0];
+    octopus = registered_tasks[1];
+    panels = registered_tasks[2];
+
+    for (int i = 0; i < 16; i++)
+    {
+        lb_start[i] = 0;
+        lb_free[i] = 0;
+    }
+}
+
 
 void handle_device_communication(void *param);
 
@@ -131,6 +151,8 @@ void start_server() {
     }
 }
 
+void handle_message(char * buffer, int buff_len);
+
 void handle_device_communication(void *param) {
     int client_port = (int)param;
     ESP_LOGI(TAG, "Started communication task for port %d", client_port);
@@ -163,6 +185,7 @@ void handle_device_communication(void *param) {
         if (len > 0) {
             buffer[len] = '\0';
             ESP_LOGI(TAG, "Received from device: %s", buffer);
+            handle_message(buffer, len);
 
             // Logique pour envoyer les messages aux serveurs et spies
         } else if (len == -1 && errno != EAGAIN) 
@@ -179,11 +202,51 @@ void handle_device_communication(void *param) {
     }
 }
 
+void handle_message(char * buffer, int buff_len)
+{
+    // Extract the destination from the first word (until the first space)
+    char dest[16];
+    sscanf(buffer, "%15s", dest);
+
+    // Select the correct letter box identifier
+    int lb_idx = -1;
+    if (strncmp(dest, "panel", 5) == 0) {
+        int panel_id = atoi(dest + 5);
+        lb_idx = 2 + panel_id;
+    } else if (strncmp(dest, "server", 6) == 0)
+        lb_idx = 0;
+    else if (strncmp(dest, "octopus", 7) == 0)
+        lb_idx = 1;
+
+    // If the destination is not valid, return
+    if (lb_idx == -1)
+    {
+        ESP_LOGE(TAG, "Invalid message destination: %s", dest);
+        return;
+    }
+
+    // Get the letter box
+    char * letter_box = letter_boxes[lb_idx];
+    int * start = lb_start + lb_idx;
+    int * free = lb_free + lb_idx;
+
+    // Copy the message in the letter box
+    for (int i = 0; i < buff_len; i++)
+    {
+        if ((*free + 1) % LB_SIZE == *start)
+        {
+            ESP_LOGE(TAG, "Letter box %d is full", lb_idx);
+            return;
+        }
+        letter_box[(*start + *free) % LB_SIZE] = buffer[i];
+        *free = (*free + 1) % LB_SIZE;
+    }
+
+    ESP_LOGI(TAG, "Remaining space in letter box %d: %d", lb_idx, (LB_SIZE + *start - *free) % LB_SIZE);
+}
+
 void app_main(void) {
-    // Init the pointers
-    server = registered_tasks[0];
-    octopus = registered_tasks[1];
-    panels = registered_tasks[2];
+    init_memory();
 
     // Init the  esp functionalities
     ESP_ERROR_CHECK(nvs_flash_init());

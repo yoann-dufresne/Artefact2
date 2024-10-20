@@ -38,7 +38,7 @@ def start_dedicated_connection(port):
         # Envoyer des messages toutes les 5 secondes
         while True:
             timestamp = int(time.time())
-            message = f"{SERVER_NAME} {timestamp}"
+            message = f"server {SERVER_NAME} {timestamp}"
             print(f"Sending message: {message}")
             sock.sendall(message.encode())
             time.sleep(5)
