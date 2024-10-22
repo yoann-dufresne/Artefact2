@@ -58,6 +58,12 @@ static int next_port = PORT + 1;
 
 void handle_register(int client_socket, struct sockaddr_in client_addr) {
     char buffer[64];
+    struct timeval timeout;
+    timeout.tv_sec = 0;  // Timeout in seconds
+    timeout.tv_usec = 10000; // Additional microseconds
+
+    setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+
     int len = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
     if (len > 0) {
         buffer[len] = '\0';
@@ -117,6 +123,9 @@ void handle_register(int client_socket, struct sockaddr_in client_addr) {
         } else {
             ESP_LOGE(TAG, "Invalid registration message");
         }
+    } else {
+        shutdown(client_socket, 0);
+        close(client_socket);
     }
 }
 
@@ -284,11 +293,33 @@ void send_messages(int lb_idx, int socket)
     }
 }
 
+void add_msg (char * msg, int msg_len);
+
+static char pending_msg[64];
+static int first_free_pending = 0;
+
 void handle_message(char * buffer, int buff_len)
+{
+    // Pre-process the messages to make sure that they are complete before forwarding them
+    for (int i=0 ; i<buff_len ; i++)
+    {
+        if (buffer[i] == '\n') {
+            pending_msg[first_free_pending] = '\0';
+            add_msg(pending_msg, first_free_pending);
+            first_free_pending = 0;
+        }
+        else {
+            pending_msg[first_free_pending++] = buffer[i];
+        }
+    }
+}
+
+
+void add_msg (char * msg, int msg_len)
 {
     // Extract the destination from the first word (until the first space)
     char dest[16];
-    sscanf(buffer, "%15s", dest);
+    sscanf(msg, "%15s", dest);
     int head_len = strlen(dest);
     // ESP_LOGI(TAG, "Destination (%d): %s", head_len, dest);
 
@@ -306,25 +337,25 @@ void handle_message(char * buffer, int buff_len)
     if (lb_idx == -1)
     {
         ESP_LOGE(TAG, "Invalid message destination: %s", dest);
-        return;
     }
+    else {
+        // Get the letter box
+        char * letter_box = letter_boxes[lb_idx];
+        int * start = lb_start + lb_idx;
+        int * free = lb_free + lb_idx;
 
-    // Get the letter box
-    char * letter_box = letter_boxes[lb_idx];
-    int * start = lb_start + lb_idx;
-    int * free = lb_free + lb_idx;
-
-    // Copy the message in the letter box
-    for (int i = 0; i < buff_len - head_len - 1; i++)
-    {
-        if ((*free + 1) % LB_SIZE == *start)
+        // Copy the message in the letter box
+        for (int i = 0; i < msg_len - head_len - 1; i++)
         {
-            ESP_LOGE(TAG, "Letter box %d is full", lb_idx);
-            return;
+            if ((*free + 1) % LB_SIZE == *start)
+            {
+                ESP_LOGE(TAG, "Letter box %d is full", lb_idx);
+                return;
+            }
+            // ESP_LOGI(TAG, "write %c at %d", buffer[i], (*free) % LB_SIZE);
+            letter_box[(*free) % LB_SIZE] = msg[i + head_len + 1];
+            *free = (*free + 1) % LB_SIZE;
         }
-        // ESP_LOGI(TAG, "write %c at %d", buffer[i], (*free) % LB_SIZE);
-        letter_box[(*free) % LB_SIZE] = buffer[i + head_len + 1];
-        *free = (*free + 1) % LB_SIZE;
     }
 
     // ESP_LOGI(TAG, "letter box %d: [%d ; %d]", lb_idx, *start, *free);

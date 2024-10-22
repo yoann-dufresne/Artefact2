@@ -1,5 +1,5 @@
 from game.hardware.button import Button
-from game.state import State
+from game.state import State, WrongState
 
 SWAG_BUTTON_ID = 8
 
@@ -25,6 +25,8 @@ class Enigma:
         if button in self.buttons_mapping:
             enigma = self.buttons_mapping[button]
             self.on_error = not enigma.button_trigger(button)
+            if self.on_error:
+                self.set_wrong()
             return True
         return False
 
@@ -32,6 +34,9 @@ class Enigma:
         self.buttons_mapping = []
 
     def get_state(self):
+        if self.on_error:
+            return WrongState()
+
         st = State()
 
         # état initial de tous les bandeaux de leds
@@ -58,6 +63,10 @@ class Enigma:
 
         return st
 
+    def __repr__(self):
+        return "\n".join([str(enigma) for enigma in self.sub_enigmas])
+
+
 
 class SubEnigma:
     def __init__(self):
@@ -81,7 +90,7 @@ class SubEnigma:
 
     # todo : init buttons
     def __repr__(self):
-        return "SubEnigma ({}) : {}".format(self.name, self.led_strip_status)
+        return "SubEnigma ({}) : {}".format(self.name, self.get_led_status())
 
 
 class SwagEnigma(SubEnigma):

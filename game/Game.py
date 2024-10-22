@@ -1,39 +1,83 @@
-"""Main de test."""
-
-import sys
-import os
-import time
-import logging
-
-from game.hardware.debug import Device as DebugDevice
-from game.hardware.real import Device as RealDevice
 
 from game.enigma import *
 from copy import deepcopy
 import time
-
-
-logger = logging.getLogger('root')
-FORMAT = (
-    '[%(asctime)s :: %(levelname)s '
-    '%(filename)s:%(lineno)s - %(funcName)10s() ]'
-    ' :: %(message)s'
-)
-
-logging.basicConfig(format=FORMAT)
-#setup_logging(handler)
-logger.setLevel(logging.CRITICAL)
-
-try:
-    os.mkdir("./game_log")
-except FileExistsError:
-    pass
-
+from pygame import mixer
 
 class Game:
 
-    @classmethod
-    def parse_enigma(cls, f):
+    def __init__(self, filename, gateway):
+        self.enigmas = self.load_from_file(filename)
+        self.reboot = False
+        self.gate = gateway
+
+        # Initialise la musique du jeu
+        mixer.pre_init(buffer=4096)
+        mixer.init()
+        mixer.music.load("data/atmosphere.mp3")
+        mixer.music.play(loops=-1)
+        # Initialise le bruit du bouton
+        self.button_sound = mixer.Sound("data/validation.mp3")
+
+
+    def game_loop(self, log_file):
+        print(f"{time.time()}\tnew game\n", file=log_file)
+        print("gamelog : new game")
+
+        for enigma in self.enigmas:
+            current_enigma = deepcopy(enigma)
+            print(f"{time.time()}\tnew enigma\n", file=log_file)
+            print("gamelog : new enigma")
+
+            # Envoie l'état du jeu sur le réseau de capteurs
+            self.gate.send_state(current_enigma.get_state())
+            while not current_enigma.is_solved():
+                # Si un reboot est déclenché, quitte la game loop
+                if self.reboot:
+                    return
+                
+                btns = self.gate.button_triggered()
+                if len(btns) > 0:
+                    # Applique l'effet des boutons
+                    for btn in self.gate.button_triggered():
+                        # applique le bouton
+                        is_active = current_enigma.button_triggered(btn)
+                        # Joue le son du bouton si le bouton est down et qu'il est actif
+                        if is_active and btn.status == Button.BUTTON_DOWN:
+                            self.button_sound.play()
+
+                    # Envoie le nouvel état du jeu
+                    self.gate.send_state(current_enigma.get_state())
+                
+                # Vérifie si le jeu est en échec
+                if current_enigma.on_error:
+                    # Affiche les couleurs d'erreur pendant 3 secondes
+                    time.sleep(3)
+                    # Réinitialise le niveau courant
+                    current_enigma = deepcopy(enigma)
+                    # Envoie l'état du niveau courant
+                    self.gate.send_state(current_enigma.get_state())
+
+                time.sleep(.01)
+
+        # Joue l'animation de fin de jeu
+        # TODO
+
+        # Attend 30 secondes avant de redémarrer le jeu
+        time.sleep(30)
+
+
+    def load_from_file(self, fname):
+        enigmas = []
+        with open(fname) as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("#"):
+                    enigmas.append(Game.parse_enigma(f))
+        return enigmas
+
+
+    def parse_enigma(f):
         sub_enigmas = []
         for line in f:
             line = line.strip()
@@ -59,45 +103,4 @@ class Game:
 
             elif line.startswith("sequence"):
                 sub_enigmas.append(SequenceEnigma(line))
-
-
-    @classmethod
-    def load_from_file(self, fname):
-        enigmas = []
-        with open(fname) as f:
-            for line in f:
-                line = line.strip()
-                if line.startswith("#"):
-                    enigmas.append(self.parse_enigma(f))
-        return enigmas
-
-
-def game_loop(device, enigmas, log_file):
-    log_file.write("{}\t{}\n".format(time.time(), "new game"))
-    print("gamelog : new game")
-
-    for enigma in enigmas:
-        dup = deepcopy(enigma)
-        log_file.write("{}\t{}\n".format(time.time(), "new enigma"))
-        print("gamelog : new enigma")
-
-        device.set_enigma(dup)
-        while not device.solve_enigma():
-            # On reboot
-            if device.server.reboot:
-                device.server.reboot = False
-                log_file.write("{}\t{}\n".format(time.time(), "reboot"))
-                print("gamelog : new enigma")
-                return
-            log_file.flush()
-            # On error set colors
-            device.send_state()
-            time.sleep(2)
-
-            # Reinit the current enigma
-            dup = deepcopy(enigma)
-            device.set_enigma(dup)
-            time.sleep(.01)
-    #device.send_win_animation()
-    time.sleep(30)
 

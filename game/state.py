@@ -13,18 +13,20 @@ COLORS = {
     "blanc": 8,
 }
 
-ARDUINOS_CONNECTED_TO_PANELS = [
-    15, 11, 14, 13, 4, 5, 6, 7
-    #14, 11, 1, 13, 4, 5, 6, 7
-    #15, 11, 14, 13, 4, 5, 6, 7  # index : panel ID and value : arduino ID
-]
-ARDUINO_LED_STRIPS_ID = 8  # we use only one arduino for the led strips.
 
-SWAG_BUTTON_ID = 8
-BUTTON_DOWN = ["DOWN", False]
-BUTTON_UP = ["UP", True]
+COLORS_ENCODING = {
+    "noir": 'n',
+    "rouge": 'r',
+    "vert": 'v',
+    "bleu": 'l',
+    "jaune": 'j',
+    "mauve": 'm',
+    "turquoise": 't',
+    "orange": 'o',
+    "blanc": 'b'
+}
 
-REBOOT_ARDUINO = 42
+
 
 class State():
     """Class to store the game state.
@@ -76,18 +78,6 @@ class State():
         return res
         # return [panel[:-1] for panel in self.buttons]
 
-    def notify_slaves(self):
-        """Put the current state to the slaves in the message_to_slaves inbox."""
-        self.message_to_slaves = []
-        self.notify_led_strip()
-        self.notify_swag_buttons()
-        self.notify_led_buttons()
-        return self.message_to_slaves
-
-    def color_to_index(self, color):
-        """Format the colors in the format that arduino can understand."""
-        return COLORS[color]
-
     def __repr__(self):
         res = ""
         res += "Led strips: \n"
@@ -129,10 +119,60 @@ class State():
         return self.led_stripes == other.led_stripes
 
 
+    def octopus_messages(self):
+        global COLORS_ENCODING
+        msgs = []
+
+        for idx, strip in enumerate(self.led_stripes):
+            msgs.append(f'octopus {idx} {"".join([COLORS_ENCODING[c] for c in strip])}')
+
+        return msgs
+
+    def panel_messages(self):
+        global COLORS_ENCODING
+        msgs = []
+
+        for idx, buttons in enumerate(self.buttons):
+            msgs.append(f'panel{idx} {"".join([COLORS_ENCODING[btn.state] for btn in buttons])}')
+
+        return msgs
 
 
 
 
+class WrongState(State):
+    """Class to store the game state.
+
+    The state is modified by the different enigmas.
+
+    The state is also is charge to build the messages to the slaves.
+    this is why it needs the "message_to_slaves" box.
+    """
+
+    def __init__(self):
+        """Empty state."""
+        self.init_led_strips()
+        self.init_buttons()
+
+    def init_buttons(self):
+        self.buttons = []
+        for panel_id in range(8):
+            tmp = []
+            for button_id in range(9):
+                tmp.append(Button(panel_id, button_id))
+            self.buttons.append(tmp)
+
+    def init_led_strips(self):
+        self.led_stripes = [
+            ["rouge" for i in range(32)],  # arduino 8
+            ["rouge" for i in range(32)],  # arduino 9
+            ["rouge" for i in range(32)],
+            ["rouge" for i in range(32)],
+            ["rouge" for i in range(32)],
+            ["rouge" for i in range(32)],
+            ["rouge" for i in range(32)],
+            ["rouge" for i in range(32)],  # arduino 15
+        ]
 
 
 
