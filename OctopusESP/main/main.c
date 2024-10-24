@@ -31,7 +31,7 @@ static led_strip_handle_t led_strip[NUM_STRIPS];
 
 void set_led_color(uint8_t *data, uint8_t r, uint8_t g, uint8_t b);
 
-void init_led_strips(uint8_t* led_strip_pins) {
+void init_led_strips() {
     /* LED strip initialization with the GPIO and pixels number*/
     led_strip_config_t strip_config = {
         .strip_gpio_num = 15, // The GPIO that connected to the LED strip's data line
@@ -98,6 +98,8 @@ void refresh_led_strip(int strip_num) {
 }
 
 void update_led_strip_with_array(int strip_num, char color_array[32]) {
+    ESP_LOGI(TAG, "update leds %d: %32s", strip_num, color_array);
+
     if (strip_num >= 0 && strip_num < NUM_STRIPS) {
         for (int i = 0; i < 32; i++) {
             uint8_t r = 0, g = 0, b = 0;
@@ -170,6 +172,9 @@ void wifi_init_sta(void) {
 
 #define SERVER_IP       "192.168.4.1"
 #define SERVER_PORT     8080
+
+void parse_message(char* message, int message_len);
+void receive_messages(int socket);
 
 void socket_task(void *pvParameters) {
     int addr_family;
@@ -261,13 +266,70 @@ void socket_task(void *pvParameters) {
         }
 
         // Traiter les communications avec le serveur ici...
-        vTaskDelay(3000 / portTICK_PERIOD_MS); // Attendre avant de retenter la connexion
+        receive_messages(sock);
 
         shutdown(sock, 0);
         close(sock);
-        
+
         vTaskDelay(3000 / portTICK_PERIOD_MS); // Attendre avant de retenter la connexion
     }
+}
+
+/**
+ * Fonction pour recevoir les messages qui peuvent être fractonnés en morceaux.
+ * Un message termine par le charactère \n.
+ * Si un message incomplet est reçu, il est stocké dans un buffer en attendant de recevoir la suite.
+ * Les message est envoyé pour parsing lorsqu'un message complet est reçu.
+ */
+void receive_messages(int socket)
+{
+    char message_buffer[256];
+    char rx_buffer[129];
+    int message_buffer_idx = 0;
+    int len;
+    while (1) {
+        len = recv(socket, rx_buffer, sizeof(rx_buffer)-1, 0);
+        if (len < 0) {
+            ESP_LOGE(TAG, "recv failed: errno %d", errno);
+            break;
+        } else if (len == 0) {
+            ESP_LOGI(TAG, "Connection closed");
+            break;
+        } else {
+            rx_buffer[len] = '\0';
+            ESP_LOGI(TAG, "Received %d bytes: %s", len, rx_buffer);
+
+            // Traiter le message reçu
+            for (int i = 0; i < len; i++) {
+                if (rx_buffer[i] == '\n') {
+                    message_buffer[message_buffer_idx] = '\0';
+                    ESP_LOGI(TAG, "Received message: %s", message_buffer);
+                    parse_message(message_buffer, message_buffer_idx);
+                    message_buffer_idx = 0;
+                } else {
+                    message_buffer[message_buffer_idx] = rx_buffer[i];
+                    message_buffer_idx++;
+                }
+            }
+        }
+    }
+}
+
+
+void parse_message(char* message, int message_len) {
+    if (message_len < 34) {
+        ESP_LOGE(TAG, "Message trop court: %s", message);
+        return;
+    }
+
+    // Vérification que le premier char est l'index du ruban de leds
+    if (message[0] < '0' || message[0] > '7') {
+        ESP_LOGE(TAG, "Mauvais destinataire dans les message: %s", message);
+        return;
+    }
+    int idx = message[0] - '0';
+
+    update_led_strip_with_array(idx, message+2);
 }
 
 
@@ -290,26 +352,14 @@ void app_main(void) {
     // Initialisation de la connexion au réseau
     wifi_init_sta();
 
+    // Initialisation des rubans de leds
+    init_led_strips();
+
     // Initialisation du socket
     xTaskCreate(socket_task, "socket_task", 4096, NULL, 5, NULL);
 
-    // // Initialisation des LED strips
-    // init_led_strips(led_strip_pins);
-    // char test_array[] = {
-    //     'v', 'r', 'l', 'n', 'b', 'v', 'r', 'l', 
-    //     'n', 'b', 'v', 'r', 'l', 'n', 'b', 'v',
-    //     'r', 'l', 'n', 'b', 'v', 'r', 'l', 'n',
-    //     'b', 'v', 'r', 'l', 'n', 'b', 'v', 'r',
-    //     'l', 'n', 'b', 'v', 'r', 'l'
-    // };
-
-    // int idx = 0;
-    // while (1)
-    // {
-    //     update_led_strip_with_array(idx%8, &(test_array[idx % 5]));
-    //     ESP_LOGI("LED", "LED strip updated with test array.");
-
-    //     vTaskDelay(1000 / portTICK_PERIOD_MS);
-    //     idx += 1;
-    // }
+    while (1)
+    {
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
 }

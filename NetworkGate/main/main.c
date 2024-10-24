@@ -356,6 +356,8 @@ void add_msg (char * msg, int msg_len)
             letter_box[(*free) % LB_SIZE] = msg[i + head_len + 1];
             *free = (*free + 1) % LB_SIZE;
         }
+        letter_box[(*free) % LB_SIZE] = '\n';
+        *free = (*free + 1) % LB_SIZE;
     }
 
     // ESP_LOGI(TAG, "letter box %d: [%d ; %d]", lb_idx, *start, *free);

@@ -54,14 +54,14 @@ class State():
 
     def init_led_strips(self):
         self.led_stripes = [
-            ["vert" for i in range(32)],  # arduino 8
-            ["vert" for i in range(32)],  # arduino 9
+            ["vert" for i in range(32)],  
+            ["vert" for i in range(32)],  
             ["vert" for i in range(32)],
             ["vert" for i in range(32)],
             ["vert" for i in range(32)],
             ["vert" for i in range(32)],
             ["vert" for i in range(32)],
-            ["vert" for i in range(32)],  # arduino 15
+            ["vert" for i in range(32)],  
         ]
 
     def swag_button_states(self):
@@ -164,14 +164,14 @@ class WrongState(State):
 
     def init_led_strips(self):
         self.led_stripes = [
-            ["rouge" for i in range(32)],  # arduino 8
-            ["rouge" for i in range(32)],  # arduino 9
+            ["rouge" for i in range(32)],  
+            ["rouge" for i in range(32)],  
             ["rouge" for i in range(32)],
             ["rouge" for i in range(32)],
             ["rouge" for i in range(32)],
             ["rouge" for i in range(32)],
             ["rouge" for i in range(32)],
-            ["rouge" for i in range(32)],  # arduino 15
+            ["rouge" for i in range(32)], 
         ]
 
 

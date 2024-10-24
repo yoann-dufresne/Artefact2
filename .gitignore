@@ -2,3 +2,8 @@
 **/build/
 **/skdconfig*
 game_log/
+.vscode
+*.lock
+*.projbuild
+*.old
+**/managed_components/
