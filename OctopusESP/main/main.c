@@ -62,8 +62,8 @@ void init_led_strips() {
 }
 
 void set_led_color(uint8_t *data, uint8_t r, uint8_t g, uint8_t b) {
-    data[0] = g; // Le protocole des LEDs Neopixel utilise l'ordre GRB
-    data[1] = r;
+    data[0] = r;
+    data[1] = g;
     data[2] = b;
 }
 
@@ -97,20 +97,31 @@ void refresh_led_strip(int strip_num) {
     led_strip_refresh(led_strip[strip_num]);
 }
 
+
+void get_color(char c, uint8_t* r, uint8_t* g, uint8_t* b) {
+    static const int intensity = 10;
+    switch (c) {
+        case 'n': *r = 0; *g = 0; *b = 0; break;
+        case 'v': *r = 0; *g = intensity; *b = 0; break;
+        case 'r': *r = intensity; *g = 0; *b = 0; break;
+        case 'l': *r = 0; *g = 0; *b = intensity; break;
+        case 'j': *r = intensity; *g = intensity; *b = 0; break;
+        case 'm': *r = intensity; *g = 0; *b = intensity; break;
+        case 't': *r = 0; *g = intensity*2; *b = intensity; break;
+        case 'o': *r = intensity*2.5; *g = intensity/2; *b = 0; break;
+        case 'b': *r = intensity; *g = intensity; *b = intensity; break;
+        default: *r = 0; *g = 0; *b = 0; break;
+    }
+}
+
+
 void update_led_strip_with_array(int strip_num, char color_array[32]) {
     ESP_LOGI(TAG, "update leds %d: %32s", strip_num, color_array);
 
     if (strip_num >= 0 && strip_num < NUM_STRIPS) {
         for (int i = 0; i < 32; i++) {
             uint8_t r = 0, g = 0, b = 0;
-            switch (color_array[i]) {
-                case 'v': g = 20; break;
-                case 'r': r = 20; break;
-                case 'l': b = 20; break;
-                case 'n': r = g = b = 0; break;
-                case 'b': r = g = b = 20; break;
-                default: break;
-            }
+            get_color(color_array[i], &r, &g, &b);
             set_led_state(strip_num, i * 2, r, g, b);
             set_led_state(strip_num, i * 2 + 1, r, g, b);
         }
