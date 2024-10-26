@@ -11,6 +11,7 @@ static int lb_start[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 static int lb_free[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 
+void receive_message(char * buffer, int len);
 void parse_message(char * buffer, int len); 
 
 void receiver(void * params) {
@@ -26,7 +27,7 @@ void receiver(void * params) {
             buffer[len] = '\0';
             ESP_LOGI(TAG, "Received: %s\n", buffer);
 
-            parse_message(buffer, len);
+            receive_message(buffer, len);
         } else if (len == 0) {
             ESP_LOGI(TAG, "Connection closed\n");
             break;
@@ -59,6 +60,23 @@ void receiver(void * params) {
     vTaskDelete(NULL);
 }
 
+#define BUFF_SIZE 1024
+static char msg_buffer[BUFF_SIZE];
+int first_free = 0;
+
+void receive_message(char * buffer, int len) {
+    for (int i = 0; i < len; i++) {
+        if (buffer[i] != '\n') {
+            msg_buffer[first_free++] = buffer[i];
+        }
+        else {
+            msg_buffer[first_free] = '\0';
+            parse_message(msg_buffer, first_free);
+            first_free = 0;
+        }
+    }
+}
+    
 
 void parse_message(char * buffer, int len) {
     static const char *TAG = "parse_message";
