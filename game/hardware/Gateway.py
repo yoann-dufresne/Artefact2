@@ -32,6 +32,7 @@ class Gateway(Thread):
             try:
                 # Connection au socket
                 sock = self.connect()
+                sock.setblocking(False)
             except (TimeoutError, ValueError) as e:
                 print("Connection timeout, retrying in 1s...")
                 time.sleep(1)
@@ -86,55 +87,25 @@ class Gateway(Thread):
         except (BrokenPipeError, ConnectionResetError, OSError) as e:
             print(f"Connection perdue: {e}")
             raise
-            
+
 
     def connect(self):
-        port = self.get_dedicated_port()
-        # Attend l'établissement de la connexion par le nouveau port côté ESP32
-        time.sleep(.1)
-        sock = self.start_dedicated_connection(port)
-        return sock
-
-    def get_dedicated_port(self):
         # Connexion initiale au port de la passerelle pour s'enregistrer
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            sock.settimeout(1)
-            print(f"Connecting to gateway at 192.168.4.1:8080...")
-            sock.connect(("192.168.4.1", 8080))
-            
-            # Get my mac address
-            mac = mac_from_socket(sock).upper()
-            
-            # Envoyer le message d'enregistrement
-            registration_message = f"register game server {mac}"
-            print(f"Sending registration message: {registration_message}")
-            sock.sendall(registration_message.encode())
-
-            # Recevoir le port dédié pour les échanges futurs
-            response = sock.recv(1024).decode()
-            print(f"Received response: {response}")
-            
-            # Extraire le numéro de port
-            if response.startswith("port"):
-                _, port = response.split()
-                return int(port)
-            else:
-                raise ValueError("Invalid response from gateway")
-
-    def start_dedicated_connection(self, port):
-        # ouvre un socket bidirectionnel vers la passerelle
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM):
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.settimeout(1)
+        print(f"Connecting to gateway at 192.168.4.1:8080...")
+        sock.connect(("192.168.4.1", 8080))
         
-        # Connexion au port dédié pour les échanges réguliers
-        print(f"Connecting to dedicated port {port}...")
-        sock.connect(("192.168.4.1", port))
-        sock.setblocking(False)
+        # Get my mac address
+        mac = mac_from_socket(sock).upper()
         
-        return sock
+        # Envoyer le message d'enregistrement
+        registration_message = f"register game server {mac}"
+        print(f"Sending registration message: {registration_message}")
+        sock.sendall(registration_message.encode())
 
+        return sock
+    
 
 def mac_from_socket(sock):
     local_ip = sock.getsockname()[0]
