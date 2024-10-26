@@ -16,7 +16,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 if __name__ == "__main__":
-    print("Artefect version 2")
+    print("Artefact version 2")
     
     # Initialise la connexion avec le réseau de capteurs du jeu
     gate = Gateway()

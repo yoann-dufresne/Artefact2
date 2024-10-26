@@ -79,19 +79,19 @@ class Gateway(Thread):
             pass
         
         # Envoi d'un message de "keep-alive" pour vérifier la connexion
-        try:
-            if time.time() - self.last_contact > 1.0:
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as test_sock:
-                    test_sock.connect(("192.168.4.1", 8080))
-                self.last_contact = time.time()
-        except (BrokenPipeError, ConnectionResetError, OSError) as e:
-            print(f"Connection perdue: {e}")
-            raise
+        # try:
+        #     if time.time() - self.last_contact > 1.0:
+        #         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as test_sock:
+        #             test_sock.connect(("192.168.4.1", 8080))
+        #         self.last_contact = time.time()
+        # except (BrokenPipeError, ConnectionResetError, OSError) as e:
+        #     print(f"Connection perdue: {e}")
+        #     raise
 
 
     def connect(self):
         # Connexion initiale au port de la passerelle pour s'enregistrer
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         print(f"Connecting to gateway at 192.168.4.1:8080...")
         sock.connect(("192.168.4.1", 8080))
@@ -103,6 +103,7 @@ class Gateway(Thread):
         registration_message = f"register game server {mac}"
         print(f"Sending registration message: {registration_message}")
         sock.sendall(registration_message.encode())
+        time.sleep(.1)
 
         return sock
     
