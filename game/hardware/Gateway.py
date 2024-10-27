@@ -4,6 +4,8 @@ from threading import Thread
 import time
 import netifaces
 
+from game.hardware import button
+
 
 class Gateway(Thread):
 
@@ -15,6 +17,9 @@ class Gateway(Thread):
         
         self.last_contact = time.time()
         self.start()
+
+        self.buffer_msg = []
+        self.triggered_buffer = []
         
     def stop(self):
         self.running = False
@@ -24,7 +29,9 @@ class Gateway(Thread):
         self.mailbox.extend(state.panel_messages())
 
     def button_triggered(self):
-        return []
+        triggered = self.triggered_buffer
+        self.triggered_buffer = []
+        return triggered
 
 
     def run(self):
@@ -74,20 +81,40 @@ class Gateway(Thread):
             if data:
                 print(f"Received data ({len(data)}): {data.decode('ascii')}")
                 ascii = data.decode('ascii')
-                print(f"[{', '.join([x for x in ascii])}]")
+                for c in ascii:
+                    if c == '\n':
+                        self.apply(self.buffer_msg)
+                        self.buffer_msg = []
+                    else:
+                        self.buffer_msg.append(c)
         except BlockingIOError:
             pass
         
-        # Envoi d'un message de "keep-alive" pour vérifier la connexion
-        # try:
-        #     if time.time() - self.last_contact > 1.0:
-        #         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as test_sock:
-        #             test_sock.connect(("192.168.4.1", 8080))
-        #         self.last_contact = time.time()
-        # except (BrokenPipeError, ConnectionResetError, OSError) as e:
-        #     print(f"Connection perdue: {e}")
-        #     raise
 
+    def apply(self, msg):
+        if msg[0] == 'P' and len(msg) >= 6:
+            # Parse le numéro de panel
+            panel_id = int(msg[1])
+            if 0 > panel_id or panel_id > 7:
+                print(f"Invalid panel id: {panel_id}")
+                return
+            # Vérifie la constante de bouton
+            if msg[3] != 'B':
+                print(f"Invalid message: {msg}")
+                return
+            # Parlser le numéro de bouton
+            button_id = int(msg[4])
+            if 0 > button_id or button_id > 8:
+                print(f"Invalid button id: {button_id}")
+                return
+            # Etat du bouton
+            if msg[5] not in "RP":
+                print(f"Invalid button state: {msg[5]}")
+                return
+            status = button.BUTTON_DOWN if msg[5] == 'P' else button.BUTTON_UP
+            
+            btn = button.Button(panel_id, button_id, status, state=button.DEFAULT_STATE)
+            self.triggered_buffer.append(btn)
 
     def connect(self):
         # Connexion initiale au port de la passerelle pour s'enregistrer
