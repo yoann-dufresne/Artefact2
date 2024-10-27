@@ -44,9 +44,10 @@ class Game:
                         # applique le bouton
                         is_active = current_enigma.button_triggered(btn)
                         # Joue le son du bouton si le bouton est down et qu'il est actif
-                        if is_active and btn.status == Button.BUTTON_DOWN:
+                        if is_active:
                             needs_update = True
-                            self.button_sound.play()
+                            if btn.status == Button.BUTTON_DOWN:
+                                self.button_sound.play()
 
                     # Envoie le nouvel état du jeu
                     if needs_update:
