@@ -164,6 +164,7 @@ void process_message(char *message, int len)
 
 void parse_message(char *message, int len)
 {
+    ESP_LOGI(TAG, "Parsing: %34s", message);
     if (len < 34) {
         ESP_LOGE(TAG, "Message trop court: %s", message);
         return;

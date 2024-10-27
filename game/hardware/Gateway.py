@@ -71,6 +71,7 @@ class Gateway(Thread):
     def send_waiting_msgs(self, socket):
         for message in self.mailbox:
             time.sleep(.001)
+            print("Envoie de: ", message)
             socket.sendall((message + '\n').encode())
         self.mailbox = []
             
@@ -111,9 +112,9 @@ class Gateway(Thread):
             if msg[5] not in "RP":
                 print(f"Invalid button state: {msg[5]}")
                 return
-            status = button.BUTTON_DOWN if msg[5] == 'P' else button.BUTTON_UP
+            status = button.Button.BUTTON_DOWN if msg[5] == 'P' else button.Button.BUTTON_UP
             
-            btn = button.Button(panel_id, button_id, status, state=button.DEFAULT_STATE)
+            btn = button.Button(panel_id, button_id, status, state=button.Button.DEFAULT_STATE)
             self.triggered_buffer.append(btn)
 
     def connect(self):
