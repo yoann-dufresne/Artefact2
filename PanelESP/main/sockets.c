@@ -173,7 +173,7 @@ void parse_message(char *message, int len)
     // Adapte l'ordre des couleurs pour correspondre à l'ordre des boutons
     char reordered[9];
     for (int i=0 ; i<8 ; i++) {
-        reordered[i] = message[logical_to_hardware_button(i)];
+        reordered[i] = message[hardware_to_logical_button(i)];
     }
     reordered[8] = message[8];
 
