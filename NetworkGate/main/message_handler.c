@@ -113,6 +113,8 @@ void parse_message(char * buffer, int len) {
         letter_boxes[lb_idx][lb_free[lb_idx]] = buffer[i];
         lb_free[lb_idx] = (lb_free[lb_idx] + 1) % LB_SIZE;
     }
+    letter_boxes[lb_idx][lb_free[lb_idx]] = '\n';
+    lb_free[lb_idx] = (lb_free[lb_idx] + 1) % LB_SIZE;
 }
 
 
@@ -127,7 +129,7 @@ void sender(void * params) {
     } else if (strncmp(msg_param->type, "octopus", 7) == 0) {
         lb_idx = 1;
     } else if (strncmp(msg_param->type, "panel", 5) == 0) {
-        int panel_id = atoi(msg_param->type + 5);
+        int panel_id = atoi(msg_param->name + 5);
         lb_idx = 2 + panel_id;
     }
 
