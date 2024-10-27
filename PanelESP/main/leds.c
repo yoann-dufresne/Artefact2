@@ -1,4 +1,5 @@
 #include "led_strip.h"
+#include "driver/gpio.h"
 #include <esp_log.h>
 
 #include "leds.h"
@@ -6,8 +7,7 @@
 #define NUM_LEDS 8
 
 #define STRIP_PIN 21
-#define SWAG_LED_PIN 23
-// #define SWAG_BTN_PIN 12
+#define SWAG_LED_PIN 12
 
 static const char *TAG = "led";
 
@@ -52,6 +52,19 @@ void init_led_strip() {
     }
     
     ESP_LOGI(TAG, "LED strip initialized.");
+
+    // SWAG led
+    gpio_config_t io_conf = {
+        .intr_type = GPIO_INTR_DISABLE,          // Pas d'interruptions
+        .mode = GPIO_MODE_OUTPUT,                // Configurer le pin en mode sortie
+        .pin_bit_mask = (1ULL << SWAG_LED_PIN),// Masque de bit pour sélectionner le pin
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,   // Pas de pull-down
+        .pull_up_en = GPIO_PULLUP_DISABLE        // Pas de pull-up
+    };
+    gpio_config(&io_conf);
+    gpio_set_level(SWAG_LED_PIN, 0);
+
+    ESP_LOGI(TAG, "SWAG led initialized.");
 }
 
 void set_led_color(int led_idx, uint8_t r, uint8_t g, uint8_t b) {
@@ -98,5 +111,9 @@ void update_led_strip_with_array(char color_array[NUM_LEDS+1]) {
     }
     refresh_led_strip();
 
-    // TODO: Faire la lumière du bouton central
+    if (color_array[NUM_LEDS] == 'n') {
+        gpio_set_level(SWAG_LED_PIN, 0);
+    } else {
+        gpio_set_level(SWAG_LED_PIN, 1);
+    }
 }

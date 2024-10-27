@@ -6,10 +6,17 @@
 #include "esp_log.h"
 #include "esp_timer.h"
 
+#include "buttons.h"
+#include "sockets.h"
+#include "panel.h"
+
 #define NUM_BUTTONS 9
 
 // Liste des pins correspondant à chaque bouton (ajuste selon tes connexions)
 int button_pins[NUM_BUTTONS] = {19, 18, 5, 17, 16, 4, 0, 2, 23};
+int button_identifyier[24] = { 6, -1,  7, -1,  5,  2, -1, -1, -1, -1,
+                              -1, -1, -1, -1, -1, -1,  4,  3,  1,  0,
+                              -1, -1, -1,  8};
 
 // Tag pour le logging
 static const char *TAG = "BUTTONS";
@@ -79,11 +86,17 @@ void set_messages(void * params)
 
         for (int i = 0; i < 24; i++) {
             if (last_events[i].pushed != 0 && (now - last_events[i].pushed) > delta) {
-                ESP_LOGW(TAG, "Button %d pushed\n", i);
+                char msg[16];
+                sprintf(msg, "server P%d B%dP", PANEL_ID, button_identifyier[i]);
+                register_msg(msg, 13);
+                ESP_LOGI(TAG, "Button %d pushed\n", i);
                 last_events[i].pushed = 0;
             }
             if (last_events[i].released != 0 && now - (last_events[i].released) > delta) {
-                ESP_LOGW(TAG, "Button %d released\n", i);
+                char msg[16];
+                sprintf(msg, "server P%d B%dR", PANEL_ID, button_identifyier[i]);
+                register_msg(msg, 13);
+                ESP_LOGI(TAG, "Button %d released\n", i);
                 last_events[i].released = 0;
             }
         }

@@ -35,7 +35,7 @@ void app_main(void) {
     init_buttons();
 
     // Initialisation de la connexion permanente
-    first_connection(NULL);
+    init_connection(NULL);
 
 
     while (1)

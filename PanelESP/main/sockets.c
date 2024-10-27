@@ -21,6 +21,10 @@ typedef struct params_s {
 static params_t global_params;
 
 
+static char letter_box[1024];
+static int lb_first_free = 0;
+
+
 // Déclaration des fonctions
 void permanent_connection(void * params);
 void receive_messages(void * params);
@@ -28,7 +32,7 @@ void send_messages(void * params);
 
 
 
-void first_connection(void * params)
+void init_connection(void * params)
 {
     wait_for_wifi();
 
@@ -90,7 +94,7 @@ void first_connection(void * params)
                 shutdown(sock, 0);
                 close(sock);
                 // Redémarrer la tache au début
-                xTaskCreate(first_connection, "first_connection", 4096, NULL, 5, NULL);
+                xTaskCreate(init_connection, "first_connection", 4096, NULL, 5, NULL);
                 vTaskDelete(NULL);
             }
         } 
@@ -171,28 +175,34 @@ void parse_message(char *message, int len)
 
 void send_messages(void * params)
 {
+    params_t *p = (params_t *)params;
+    char message[64];
+    int len;
     while (1) {
-        ESP_LOGI(TAG, "Envoi de messages");
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-        taskYIELD();
+        if (lb_first_free > 0) {
+            // Envoi de la commande de connexion
+            len = send(p->sock, letter_box, lb_first_free, 0);
+            lb_first_free = 0;
+            if (len < 0) {
+                ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
+                vTaskDelay(100 / portTICK_PERIOD_MS);
+            } 
+            else {
+                ESP_LOGD(TAG, "Message envoyé: %s", message);
+            }
+        }
+        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
+    vTaskDelete(NULL);
+}
 
-    // params_t *p = (params_t *)params;
-    // char message[64];
-    // int len;
-    // while (1) {
-    //     // Envoi de la commande de connexion
-    //     snprintf(message, sizeof(message), "register octopus octopus %s", mac_str);
-    //     len = send(p->perm_sock, message, strlen(message), 0);
-    //     if (len < 0) {
-    //         ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
-    //         vTaskDelay(1000 / portTICK_PERIOD_MS);
-    //     } 
-    //     else {
-    //         ESP_LOGI(TAG, "Message d'enregistrement: %s", message);
-    //     }
-    //     vTaskDelay(1000 / portTICK_PERIOD_MS);
-    // }
-    // vTaskDelete(NULL);
+
+void register_msg(char * msg, int len)
+{
+    // Envoi de la commande de connexion
+    memcpy(letter_box + lb_first_free, msg, len);
+    lb_first_free += len;
+    letter_box[lb_first_free] = '\n';
+    lb_first_free += 1;
 }
     
