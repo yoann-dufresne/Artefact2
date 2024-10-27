@@ -76,6 +76,8 @@ void button_task(void* arg) {
     }
 }
 
+
+
 // Tache d'enregistrement des événements de boutons
 void set_messages(void * params)
 {
@@ -87,14 +89,14 @@ void set_messages(void * params)
         for (int i = 0; i < 24; i++) {
             if (last_events[i].pushed != 0 && (now - last_events[i].pushed) > delta) {
                 char msg[16];
-                sprintf(msg, "server P%d B%dP", PANEL_ID, button_identifyier[i]);
+                sprintf(msg, "server P%d B%dP", PANEL_ID, hardware_to_logical_button(button_identifyier[i]));
                 register_msg(msg, 13);
                 ESP_LOGI(TAG, "Button %d pushed\n", i);
                 last_events[i].pushed = 0;
             }
             if (last_events[i].released != 0 && now - (last_events[i].released) > delta) {
                 char msg[16];
-                sprintf(msg, "server P%d B%dR", PANEL_ID, button_identifyier[i]);
+                sprintf(msg, "server P%d B%dR", PANEL_ID, hardware_to_logical_button(button_identifyier[i]));
                 register_msg(msg, 13);
                 ESP_LOGI(TAG, "Button %d released\n", i);
                 last_events[i].released = 0;

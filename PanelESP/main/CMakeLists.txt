@@ -4,4 +4,5 @@ idf_component_register(SRCS
                         "sockets.c"
                         "leds.c"
                         "buttons.c"
+                        "panel.c"
                        INCLUDE_DIRS ".")

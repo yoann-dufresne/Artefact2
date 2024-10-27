@@ -6,6 +6,7 @@
 #include "sockets.h"
 #include "wifi.h"
 #include "leds.h"
+#include "panel.h"
 
 static const char *TAG = "sockets";
 
@@ -85,7 +86,7 @@ void init_connection(void * params)
     for (int i=0 ; i<5 ; i++) {
         // Envoi de la commande de connexion
         char message[64];
-        snprintf(message, sizeof(message), "register panel5 panel %s", mac_str);
+        snprintf(message, sizeof(message), "register panel%d panel %s", PANEL_ID, mac_str);
         int len = send(sock, message, strlen(message), 0);
         if (len < 0) {
             ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
@@ -169,7 +170,13 @@ void parse_message(char *message, int len)
         return;
     }
 
-    update_led_strip_with_array(message);
+    // Adapte l'ordre des couleurs pour correspondre à l'ordre des boutons
+    char reordered[8];
+    for (int i=0 ; i<8 ; i++) {
+        reordered[i] = message[logical_to_hardware_button(i)];
+    }
+
+    update_led_strip_with_array(reordered);
 }
 
 
