@@ -9,10 +9,11 @@ static const char *TAG = "leds";
 
 static uint8_t led_strip_pins[NUM_STRIPS] = {15, 2, 18, 19, 32, 25, 14, 12};
 static uint8_t led_data[NUM_STRIPS][NUM_LEDS_PER_STRIP * 3];
+static bool led_update[NUM_STRIPS][NUM_LEDS_PER_STRIP];
 
 static led_strip_handle_t led_strip[NUM_STRIPS];
 
-void set_led_color(uint8_t *data, uint8_t r, uint8_t g, uint8_t b);
+void set_led_color(uint8_t *data, bool* update, uint8_t r, uint8_t g, uint8_t b);
 
 void init_led_strips() {
     /* LED strip initialization with the GPIO and pixels number*/
@@ -38,22 +39,27 @@ void init_led_strips() {
 
         // Setup the data buffer
         for (int j = 0; j < NUM_LEDS_PER_STRIP; j++) {
-            set_led_color(&led_data[i][j * 3], 0, 0, 0);
+            set_led_color(&led_data[i][j * 3], &led_update[i][j], 5, 5, 5);
         }
     }
     
     ESP_LOGI(TAG, "LED strips initialized.");
 }
 
-void set_led_color(uint8_t *data, uint8_t r, uint8_t g, uint8_t b) {
+void set_led_color(uint8_t *data, bool* update, uint8_t r, uint8_t g, uint8_t b) {
+    if (data[0] == r && data[1] == g && data[2] == b) {
+        return;
+    }
+
     data[0] = r;
     data[1] = g;
     data[2] = b;
+    *update = true;
 }
 
 void set_led_state(int strip_num, int led_num, uint8_t r, uint8_t g, uint8_t b) {
     if (strip_num >= 0 && strip_num < NUM_STRIPS && led_num >= 0 && led_num < NUM_LEDS_PER_STRIP) {
-        set_led_color(&led_data[strip_num][led_num * 3], r, g, b);
+        set_led_color(&led_data[strip_num][led_num * 3], &led_update[strip_num][led_num], r, g, b);
     }
 }
 
@@ -73,12 +79,20 @@ size_t encode_led_data(uint8_t* led_data, rmt_symbol_word_t* symbols, size_t led
 
 void refresh_led_strip(int strip_num) {
     ESP_LOGI(TAG, "Refreshing LED strip %d", strip_num);
+    bool to_refrash = false;
     // Update the leds with the new data
     for (int led_idx=0 ; led_idx<NUM_LEDS_PER_STRIP ; led_idx++) {
-        led_strip_set_pixel(led_strip[strip_num], led_idx, led_data[strip_num][led_idx*3], led_data[strip_num][led_idx*3+1], led_data[strip_num][led_idx*3+2]);
+        if (led_update[strip_num][led_idx]) {
+            to_refrash = true;
+            led_update[strip_num][led_idx] = false;
+            led_strip_set_pixel(led_strip[strip_num], led_idx, led_data[strip_num][led_idx*3], led_data[strip_num][led_idx*3+1], led_data[strip_num][led_idx*3+2]);
+        }
     }
-    // Refrech the led strip physically
-    led_strip_refresh(led_strip[strip_num]);
+
+    if (to_refrash) {    
+        // Refrech the led strip physically
+        led_strip_refresh(led_strip[strip_num]);
+    }
 }
 
 
