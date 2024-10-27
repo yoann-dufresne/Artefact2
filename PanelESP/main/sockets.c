@@ -121,7 +121,7 @@ void receive_messages(void * params)
     params_t *p = (params_t *)params;
     
     struct timeval timeout;
-    timeout.tv_sec = 3;  // 1 secondes
+    timeout.tv_sec = 1;  // 1 secondes
     timeout.tv_usec = 0; // 0 microsecondes
     setsockopt(p->sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
     

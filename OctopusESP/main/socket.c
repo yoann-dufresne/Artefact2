@@ -52,8 +52,8 @@ void init_connection(void * params)
     addr_family = AF_INET;
     ip_protocol = IPPROTO_IP;
 
-    int sock = -1;
-    while (sock < 0)
+    int sock = -1, err = -1;
+    while ((sock < 0) || (err != 0))
     {
         sock = socket(addr_family, SOCK_STREAM, ip_protocol);
         if (sock < 0) {
@@ -61,21 +61,18 @@ void init_connection(void * params)
             shutdown(sock, 0);
             close(sock);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
+            continue;
         }
-    }
-    
 
-    ESP_LOGI(TAG, "Socket created, connecting to %s:%d", SERVER_IP, SERVER_PORT);
+        ESP_LOGI(TAG, "Socket created, connecting to %s:%d", SERVER_IP, SERVER_PORT);
 
-    // Essaye de se connecter au serveur en boucle jusqu'à ce que la connexion soit établie
-    int err = 1;
-    while (err != 0) {
         err = connect(sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
         if (err != 0) {
-            ESP_LOGE(TAG, "Socket unable to connect: errno %d", errno);
+            ESP_LOGW(TAG, "Socket unable to connect: errno %d", errno);
             shutdown(sock, 0);
             close(sock);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
+            continue;
         }
     }
 
@@ -122,13 +119,32 @@ void parse_message(char *message, int len);
 void receive_messages(void * params)
 {
     params_t *p = (params_t *)params;
+    
+    struct timeval timeout;
+    timeout.tv_sec = 1;  // 1 secondes
+    timeout.tv_usec = 0; // 0 microsecondes
+    setsockopt(p->sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+
     char rx_buffer[64];
     int len;
     while (1) {
         len = recv(p->sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
         if (len < 0) {
+            if (errno == EAGAIN) {
+                continue;
+            }
+            
             ESP_LOGE(TAG, "recv failed: errno %d", errno);
-            break;
+            
+            shutdown(global_params.sock, 0);
+            close(global_params.sock);
+            vTaskDelay(100 / portTICK_PERIOD_MS);
+            global_params.sock = -1;
+
+            xTaskCreate(init_connection, "reconnection", 4096, NULL, 5, NULL);
+            ESP_LOGW(TAG, "Reconnexion en cours...");
+
+            vTaskDelete(NULL);
         } else if (len == 0) {
             ESP_LOGI(TAG, "Connection closed");
             break;
