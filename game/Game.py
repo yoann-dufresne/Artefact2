@@ -39,7 +39,7 @@ class Game:
                 btns = self.gate.button_triggered()
                 if len(btns) > 0:
                     # Applique l'effet des boutons
-                    for btn in self.gate.button_triggered():
+                    for btn in btns:
                         # applique le bouton
                         is_active = current_enigma.button_triggered(btn)
                         # Joue le son du bouton si le bouton est down et qu'il est actif
