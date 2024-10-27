@@ -1,7 +1,7 @@
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <esp_log.h>
+// #include <string.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <esp_log.h>
 // #include <esp_log.h>
 // #include <esp_netif.h>
 // #include <lwip/ip4_addr.h>
@@ -17,8 +17,6 @@
 #include "leds.h"
 #include "buttons.h"
 
-#define PORT 8080
-static const char *TAG = "panel";
 
 
 

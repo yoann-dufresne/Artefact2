@@ -7,10 +7,15 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
 
+#include "wifi.h"
+#include "sockets.h"
+
 static EventGroupHandle_t s_wifi_event_group;
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_SSID "artefact"
 #define WIFI_PASS "tcafetra"
+
+static bool new_connection = false;
 
 static const char *TAG = "wifi_handler";
 
@@ -25,6 +30,7 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
         ip_event_got_ip_t *event = (ip_event_got_ip_t *) event_data;
         ESP_LOGI(TAG, "Adresse IP acquise: " IPSTR, IP2STR(&event->ip_info.ip));
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+        new_connection = true;
     }
 }
 
