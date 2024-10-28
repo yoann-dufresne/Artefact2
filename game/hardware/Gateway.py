@@ -21,6 +21,8 @@ class Gateway(Thread):
         self.buffer_msg = []
         self.triggered_buffer = []
         self.socket = None
+        self.last_contact = 0
+        self.last_pingpong = 0
         
     def stop(self):
         self.running = False
@@ -43,8 +45,8 @@ class Gateway(Thread):
         while self.running:
             try:
                 # Connection au socket
-                sock = self.connect()
-                sock.setblocking(False)
+                self.connect()
+                self.sock.setblocking(False)
             except (TimeoutError, ValueError) as e:
                 print("Connection timeout, retrying in 1s...")
                 time.sleep(1)
@@ -60,33 +62,43 @@ class Gateway(Thread):
             while self.running:
                 try:
                     # Envoie les messages
-                    self.send_waiting_msgs(sock)
+                    self.send_waiting_msgs()
 
                     # Récupère les message
-                    self.receive_msgs(sock)
+                    self.receive_msgs()
                     
                 except (BrokenPipeError, ConnectionResetError, OSError) as e:
-                    print("Erreur de connexion...")
+                    print("Erreur de connexion...", e)
                     # Sort de la boucle interne pour retenter une connexion
+                    try:
+                        self.sock.close()
+                    except OSError:
+                        pass
                     break
-
+                
                 time.sleep(.01)
                 
             
-    def send_waiting_msgs(self, socket):
+    def send_waiting_msgs(self):
         for message in self.mailbox:
             time.sleep(.001)
-            print("Envoie de: ", message)
-            socket.sendall((message + '\n').encode())
+            if not message.startswith("server"):
+                print("Envoie de: ", message)
+            self.sock.sendall((message + '\n').encode())
         self.mailbox = []
             
-    def receive_msgs(self, sock):
+    def receive_msgs(self):
         # Lit les messages recus sur le socket sock
         try:
-            data = sock.recv(1024)
+            data = self.sock.recv(1024)
             if data:
-                print(f"Received data ({len(data)}): {data.decode('ascii')}")
                 ascii = data.decode('ascii')
+                print(f"Received data ({len(data)}): {ascii.strip()}")
+                # keepalive message
+                if ascii.startswith("pingpong"):
+                    self.last_contact = time.time()
+                    return
+                
                 for c in ascii:
                     if c == '\n':
                         self.apply(self.buffer_msg)
@@ -94,7 +106,13 @@ class Gateway(Thread):
                     else:
                         self.buffer_msg.append(c)
         except BlockingIOError:
-            pass
+            dt = time.time() - self.last_contact
+            
+            if dt > 5:
+                raise OSError
+            elif dt > 2 and (time.time() - self.last_pingpong) > 1:
+                self.mailbox.append("server pingpong")
+                self.last_pingpong = time.time()
         
 
     def apply(self, msg):
@@ -124,22 +142,21 @@ class Gateway(Thread):
 
     def connect(self):
         # Connexion initiale au port de la passerelle pour s'enregistrer
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.sock.settimeout(1)
         print(f"Connecting to gateway at 192.168.4.1:8080...")
-        sock.settimeout(1)
-        sock.connect(("192.168.4.1", 8080))
+        self.sock.connect(("192.168.4.1", 8080))
+        self.last_contact = time.time()
         
         # Get my mac address
-        mac = mac_from_socket(sock).upper()
+        mac = mac_from_socket(self.sock).upper()
         
         # Envoyer le message d'enregistrement
         registration_message = f"register game server {mac}"
         print(f"Sending registration message: {registration_message}")
-        sock.sendall(registration_message.encode())
-        time.sleep(.1)
-
-        return sock
+        self.sock.sendall(registration_message.encode())
+        time.sleep(.5)
     
 
 def mac_from_socket(sock):
