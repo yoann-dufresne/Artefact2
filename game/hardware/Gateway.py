@@ -20,9 +20,14 @@ class Gateway(Thread):
 
         self.buffer_msg = []
         self.triggered_buffer = []
+        self.socket = None
         
     def stop(self):
         self.running = False
+        # Ferme proprement le socket
+        if self.socket is not None:
+            self.socket.close()
+            self.socket = None
 
     def send_state(self, state):
         self.mailbox.extend(state.octopus_messages())
@@ -48,6 +53,7 @@ class Gateway(Thread):
                 if e.errno in [errno.EHOSTUNREACH, errno.ENETUNREACH]:
                     print("Host unreachable, retrying in 1s...")
                     time.sleep(1)
+                    print("running", self.running)
                     continue
                 raise
 
@@ -65,8 +71,7 @@ class Gateway(Thread):
                     break
 
                 time.sleep(.01)
-
-            # fermeture du socket
+                
             
     def send_waiting_msgs(self, socket):
         for message in self.mailbox:
@@ -122,6 +127,7 @@ class Gateway(Thread):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         print(f"Connecting to gateway at 192.168.4.1:8080...")
+        sock.settimeout(1)
         sock.connect(("192.168.4.1", 8080))
         
         # Get my mac address
