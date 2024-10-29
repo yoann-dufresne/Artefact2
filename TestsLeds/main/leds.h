@@ -4,7 +4,5 @@
 
 void init_led_strips();
 void update_led_strip_with_array(int strip_num, char color_array[32]);
-void set_led_state(int strip_num, int led_num, uint8_t r, uint8_t g, uint8_t b);
-void refresh_led_strip(int strip_num);
 
 #endif // LEDS_H

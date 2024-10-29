@@ -13,6 +13,8 @@
 
 
 
+
+
 // ------------------- MAIN -------------------
 
 void app_main(void) {
@@ -23,10 +25,15 @@ void app_main(void) {
     init_led_strips();
 
     // Initialisation du socket
-    init_connection(NULL);
+    xTaskCreate(&init_connection, "init_connection", 2048, NULL, 5, NULL);
 
     while (1)
     {
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+        set_led_state(5, 0, 50, 0, 0);
+        refresh_led_strip(5);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+        set_led_state(5, 0, 0, 0, 0);
+        refresh_led_strip(5); 
     }
 }

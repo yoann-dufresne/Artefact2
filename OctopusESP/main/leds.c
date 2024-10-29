@@ -1,48 +1,31 @@
 #include <esp_log.h>
-
-#include "led_strip.h"
+#include <stdbool.h>
+#include "driver/gpio.h"
+#include <rom/ets_sys.h>
+#include "esp_rom_gpio.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 static const char *TAG = "leds";
 
 #define NUM_STRIPS 8
-#define NUM_LEDS_PER_STRIP 64
+#define NUM_LEDS_PER_STRIP 4
 
 static uint8_t led_strip_pins[NUM_STRIPS] = {15, 2, 18, 19, 32, 25, 14, 12};
 static uint8_t led_data[NUM_STRIPS][NUM_LEDS_PER_STRIP * 3];
 static bool led_update[NUM_STRIPS][NUM_LEDS_PER_STRIP];
 
-static led_strip_handle_t led_strip[NUM_STRIPS];
-
 void set_led_color(uint8_t *data, bool* update, uint8_t r, uint8_t g, uint8_t b);
 
 void init_led_strips() {
-    /* LED strip initialization with the GPIO and pixels number*/
-    led_strip_config_t strip_config = {
-        .strip_gpio_num = 15, // The GPIO that connected to the LED strip's data line
-        .max_leds = NUM_LEDS_PER_STRIP, // The number of LEDs in the strip,
-        .color_component_format = LED_STRIP_COLOR_COMPONENT_FMT_GRB, // Pixel format of your LED strip
-        .led_model = LED_MODEL_WS2812, // LED strip model
-        .flags.invert_out = false, // whether to invert the output signal (useful when your hardware has a level inverter)
-    };
-
-    led_strip_rmt_config_t rmt_config = {
-        .clk_src = RMT_CLK_SRC_DEFAULT, // different clock source can lead to different power consumption
-        .resolution_hz = 10 * 1000 * 1000, // 10MHz
-        .mem_block_symbols = 64,
-        .flags.with_dma = false, // whether to enable the DMA feature
-    };
-
+    // Initialisation des pins pour chaque ruban
     for (int i = 0; i < NUM_STRIPS; i++) {
-        // Setup the phisical device
-        strip_config.strip_gpio_num = led_strip_pins[i];
-        ESP_ERROR_CHECK(led_strip_new_rmt_device(&strip_config, &rmt_config, &(led_strip[i])));
-
-        // Setup the data buffer
-        for (int j = 0; j < NUM_LEDS_PER_STRIP; j++) {
-            set_led_color(&led_data[i][j * 3], &led_update[i][j], 5, 5, 5);
-        }
+        ESP_LOGI("LEDs", "Initialisation des LEDs sur la broche %d", led_strip_pins[i]);
+        gpio_set_direction(led_strip_pins[i], GPIO_MODE_OUTPUT);
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
     
+    vTaskDelay(pdMS_TO_TICKS(1000));
     ESP_LOGI(TAG, "LED strips initialized.");
 }
 
@@ -51,8 +34,8 @@ void set_led_color(uint8_t *data, bool* update, uint8_t r, uint8_t g, uint8_t b)
         return;
     }
 
-    data[0] = r;
-    data[1] = g;
+    data[0] = g;
+    data[1] = r;
     data[2] = b;
     *update = true;
 }
@@ -63,37 +46,37 @@ void set_led_state(int strip_num, int led_num, uint8_t r, uint8_t g, uint8_t b) 
     }
 }
 
-size_t encode_led_data(uint8_t* led_data, rmt_symbol_word_t* symbols, size_t led_count) {
-    size_t symbol_idx = 0;
-    for (size_t i = 0; i < led_count; i++) {
-        for (int bit = 7; bit >= 0; bit--) {
-            symbols[symbol_idx].level0 = 1;
-            symbols[symbol_idx].duration0 = (led_data[i] & (1 << bit)) ? 8 : 4;
-            symbols[symbol_idx].level1 = 0;
-            symbols[symbol_idx].duration1 = (led_data[i] & (1 << bit)) ? 4 : 8;
-            symbol_idx++;
-        }
-    }
-    return symbol_idx;
+
+void send_bit_1(int pin) {
+    gpio_set_level(pin, 1);
+    ets_delay_us(0.7);  // ~0.7 µs pour "HIGH" de bit 1
+    gpio_set_level(pin, 0);
+    ets_delay_us(0.6);  // ~0.6 µs pour "LOW" de bit 1
+}
+
+void send_bit_0(int pin) {
+    gpio_set_level(pin, 1);
+    ets_delay_us(0.35);  // ~0.35 µs pour "HIGH" de bit 0
+    gpio_set_level(pin, 0);
+    ets_delay_us(0.8);   // ~0.8 µs pour "LOW" de bit 0
 }
 
 void refresh_led_strip(int strip_num) {
     ESP_LOGI(TAG, "Refreshing LED strip %d", strip_num);
-    bool to_refrash = false;
-    // Update the leds with the new data
-    for (int led_idx=0 ; led_idx<NUM_LEDS_PER_STRIP ; led_idx++) {
-        if (led_update[strip_num][led_idx]) {
-            to_refrash = true;
-            led_update[strip_num][led_idx] = false;
-            led_strip_set_pixel(led_strip[strip_num], led_idx, led_data[strip_num][led_idx*3], led_data[strip_num][led_idx*3+1], led_data[strip_num][led_idx*3+2]);
+    
+    for (int i = 0; i < NUM_LEDS_PER_STRIP * 3; i++) {
+        uint8_t byte = led_data[strip_num][i];
+        for (int i = 0; i < 8; i++) {
+            if (byte & (1 << (7 - i))) {
+                send_bit_1(led_strip_pins[strip_num]);
+            } else {
+                send_bit_0(led_strip_pins[strip_num]);
+            }
         }
     }
-
-    if (to_refrash) {    
-        // Refrech the led strip physically
-        led_strip_refresh(led_strip[strip_num]);
-    }
+    ets_delay_us(80);
 }
+
 
 
 void get_color(char c, uint8_t* r, uint8_t* g, uint8_t* b) {
