@@ -143,6 +143,7 @@ void registration(void * params) {
                         // Efface l'adresse MAC
                         memset(clients[i].mac, 0, 18);
                         clients[i].in_use = 0;
+                        break;
                     }
                 }
             }
@@ -151,6 +152,15 @@ void registration(void * params) {
             strcpy(client->mac, mac);
             strcpy(client->msg_param.name, name);
             strcpy(client->msg_param.type, type);
+
+            // Send the registration confirmation
+            char message[64];
+            snprintf(message, sizeof(message), "ok");
+            len = send(socket, message, strlen(message), 0);
+            if (len < 0) {
+                ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
+                break;
+            }
 
             // Start the recv task
             xTaskCreate(receiver, "receiver", 4096, (void *)&(client->msg_param), 5, &(client->msg_param.recv_task));

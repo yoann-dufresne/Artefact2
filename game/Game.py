@@ -28,6 +28,7 @@ class Game:
             current_enigma = deepcopy(enigma)
             print(f"{time.time()}\tnew enigma\n", file=log_file)
             print("gamelog : new enigma")
+            time.sleep(3)
 
             # Envoie l'état du jeu sur le réseau de capteurs
             self.gate.send_state(current_enigma.get_state())

@@ -7,7 +7,9 @@ static const char *TAG = "leds";
 #define NUM_STRIPS 8
 #define NUM_LEDS_PER_STRIP 64
 
-static uint8_t led_strip_pins[NUM_STRIPS] = {15, 2, 18, 19, 32, 25, 14, 12};
+// static uint8_t led_strip_pins[NUM_STRIPS] = {15, 2, 18, 19, 32, 25, 14, 12};
+static uint8_t led_strip_pins[NUM_STRIPS] = {15, 12, 14, 25, 32, 19, 18, 2};
+
 static uint8_t led_data[NUM_STRIPS][NUM_LEDS_PER_STRIP * 3];
 static bool led_update[NUM_STRIPS][NUM_LEDS_PER_STRIP];
 

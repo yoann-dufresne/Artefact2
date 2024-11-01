@@ -108,7 +108,7 @@ class Gateway(Thread):
         except BlockingIOError:
             dt = time.time() - self.last_contact
             
-            if dt > 5:
+            if dt > 15:
                 raise OSError
             elif dt > 2 and (time.time() - self.last_pingpong) > 1:
                 self.mailbox.append("server pingpong")
@@ -116,6 +116,9 @@ class Gateway(Thread):
         
 
     def apply(self, msg):
+        if len(msg) == 0:
+            return
+        
         if msg[0] == 'P' and len(msg) >= 6:
             # Parse le numéro de panel
             panel_id = int(msg[1])
@@ -156,6 +159,15 @@ class Gateway(Thread):
         registration_message = f"register game server {mac}"
         print(f"Sending registration message: {registration_message}")
         self.sock.sendall(registration_message.encode())
+        
+        # Attendre la réponse
+        data = self.sock.recv(1024)
+        ascii = data.decode('ascii')
+        print(f"Received data ({len(data)}): {ascii.strip()}")
+        if ascii.strip() != "ok":
+            self.sock.close()
+            raise ValueError("Registration failed")
+        
         time.sleep(.5)
     
 

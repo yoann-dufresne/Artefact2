@@ -97,7 +97,38 @@ void init_connection(void * params)
         } 
         else {
             ESP_LOGI(TAG, "Message d'enregistrement: %s", message);
-            break;
+            
+            // Attendre la réponse du serveur
+            char rx_buffer[64];
+            len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
+            if (len < 0) {
+                ESP_LOGE(TAG, "Error occurred during receiving: errno %d", errno);
+                vTaskDelay(1000 / portTICK_PERIOD_MS);
+                if (i == 4) {
+                    shutdown(sock, 0);
+                    close(sock);
+                    // Redémarrer la tache au début
+                    xTaskCreate(init_connection, "first_connection", 4096, NULL, 5, NULL);
+                    vTaskDelete(NULL);
+                }
+            } 
+            else {
+                rx_buffer[len] = '\0';
+                ESP_LOGI(TAG, "Received: %s", rx_buffer);
+                if (strcmp(rx_buffer, "ok") == 0) {
+                    break;
+                }
+                else {
+                    vTaskDelay(1000 / portTICK_PERIOD_MS);
+                    if (i == 4) {
+                        shutdown(sock, 0);
+                        close(sock);
+                        // Redémarrer la tache au début
+                        xTaskCreate(init_connection, "first_connection", 4096, NULL, 5, NULL);
+                        vTaskDelete(NULL);
+                    }
+                }
+            }
         }
     }
 
@@ -142,12 +173,13 @@ void receive_messages(void * params)
             vTaskDelay(100 / portTICK_PERIOD_MS);
             global_params.sock = -1;
             
+            xTaskCreate(init_connection, "reconnection", 4096, NULL, 5, NULL);
+            ESP_LOGW(TAG, "Reconnexion en cours...");
+            
             vTaskSuspend(global_params.send_task);
             vTaskDelete(global_params.send_task);
             global_params.send_task = NULL;
 
-            xTaskCreate(init_connection, "reconnection", 4096, NULL, 5, NULL);
-            ESP_LOGW(TAG, "Reconnexion en cours...");
 
             vTaskDelete(NULL);
         } else if (len == 0) {
